@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Course {
+  id           Int            @id @default(autoincrement())
+  name         String
+  thumbnail    String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime?      @updatedAt
+  Lesson       Lesson[]
+  UserProgress UserProgress[]
+}
+
+model Lesson {
+  id               Int             @id @default(autoincrement())
+  title            String
+  content          String          @db.LongText
+  level            Int
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime?       @updatedAt
+  ownership_course Course          @relation(fields: [course_id], references: [id])
+  course_id        Int
+  Quizze           Quizz[]
+  UserProgress     UserProgress[]
+  CommentLesson    CommentLesson[]
+}
+
+model Quizz {
+  id               Int            @id @default(autoincrement())
+  onwership_Lesson Lesson         @relation(fields: [lesson_id], references: [id])
+  lesson_id        Int
+  answer           String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime?      @updatedAt
+  UserProgress     UserProgress[]
+}
+
+model User {
+  id             Int              @id @default(autoincrement())
+  username       String
+  email          String           @unique
+  password       String
+  refresh_token  String
+  avatar         String
+  status         Int              @default(1)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  posts          Post[]
+  UserProgress   UserProgress[]
+  UserDictionary UserDictionary[]
+  Comment        CommentPost[]
+  CommentLesson  CommentLesson[]
+  SavedPost      SavedPost[]
+}
+
+model UserProgress {
+  id                Int       @id @default(autoincrement())
+  author            User      @relation(fields: [author_id], references: [id])
+  author_id         Int
+  onswership_course Course    @relation(fields: [course_id], references: [id])
+  course_id         Int
+  ownership_lesson  Lesson    @relation(fields: [lesson_id], references: [id])
+  lesson_id         Int
+  onwership_quizze  Quizz     @relation(fields: [quizz_id], references: [id])
+  quizz_id          Int
+  score             Int
+  status            Int       @default(1)
+  created_at        DateTime  @default(now())
+  updated_at        DateTime? @updatedAt
+}
+
+model CommentLesson {
+  id               Int       @id @default(autoincrement())
+  message          String
+  author           User      @relation(fields: [author_id], references: [id])
+  author_id        Int
+  ownership_lesson Lesson    @relation(fields: [lesson_id], references: [id])
+  lesson_id        Int
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt
+}
+
+model vocabulary {
+  id                 Int              @id @default(autoincrement())
+  ownership_category Category         @relation(fields: [category_id], references: [id])
+  category_id        Int
+  created_at         DateTime         @default(now())
+  updated_at         DateTime?        @updatedAt
+  UserDictionary     UserDictionary[]
+}
+
+model UserDictionary {
+  id                   Int        @id @default(autoincrement())
+  author               User       @relation(fields: [author_id], references: [id])
+  author_id            Int
+  ownership_vocabulary vocabulary @relation(fields: [vocabulary_id], references: [id])
+  vocabulary_id        Int
+  created_at           DateTime   @default(now())
+  updated_at           DateTime?  @updatedAt
+}
+
+model Post {
+  id          Int           @id @default(autoincrement())
+  title       String
+  thumbnail   String
+  description String
+  summary     String
+  content     String        @db.LongText
+  status      Int           @default(1)
+  owner       User          @relation(fields: [ownerId], references: [id])
+  ownerId     Int
+  category    Category      @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  Comment     CommentPost[]
+  SavedPost   SavedPost[]
+  PostTag     PostTag[]
+}
+
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+  Post        Post[]
+  vocabulary  vocabulary[]
+}
+
+model CommentPost {
+  id             Int       @id @default(autoincrement())
+  message        String
+  author         User      @relation(fields: [author_id], references: [id])
+  author_id      Int
+  ownership_post Post      @relation(fields: [post_id], references: [id])
+  post_id        Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+}
+
+model SavedPost {
+  id             Int       @id @default(autoincrement())
+  author         User      @relation(fields: [author_id], references: [id])
+  author_id      Int
+  ownership_post Post      @relation(fields: [post_id], references: [id])
+  post_id        Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+}
+
+model Tag {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  PostTag   PostTag[]
+}
+
+model PostTag {
+  id             Int       @id @default(autoincrement())
+  ownership_post Post      @relation(fields: [post_id], references: [id])
+  post_id        Int
+  ownership_tag  Tag       @relation(fields: [tag_id], references: [id])
+  tag_id         Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+}
