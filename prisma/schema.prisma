@@ -49,8 +49,8 @@ model User {
   username       String
   email          String           @unique
   password       String
-  refresh_token  String
-  avatar         String
+  avatar         String?
+  refresh_token  String?          @db.LongText
   status         Int              @default(1)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
