@@ -1,12 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.servcie';
-import { UserFilterType, UserPaginationResponseType } from './dto/user.dto';
-
+import { CreateUserDto, SoftDeleteUserDto, UpdateUserDto, UserFilterType, UserPaginationResponseType, softMultipleDeleteUserDto } from './dto/user.dto';
+import {hash} from 'bcrypt'
 @Injectable()
 export class UserService {
-    constructor(private prismaService: PrismaService){
-
+    constructor(private prismaService: PrismaService,){}
+    async create(body: CreateUserDto):Promise<User>{
+        // step 1: checking email has already exist
+        const user = await this.prismaService.user.findUnique({
+            where:{
+                email: body.email,
+                status: 1
+            },
+        })
+        if(user) {
+            throw new HttpException({message: "This email has been used"},HttpStatus.BAD_REQUEST)
+        }
+        // step 2: hash password and store to db
+        const hashPassword = await hash(body.password, 10)
+        const result = await this.prismaService.user.create({
+            data: {...body, password: hashPassword},
+        })
+        return result
     }
     async getAll(filters: UserFilterType): Promise<UserPaginationResponseType>{
         const items_per_page = Number(filters.items_per_page) || 10;
@@ -72,5 +88,54 @@ export class UserService {
             currentPage: page,
             itemsPerPage: items_per_page
         }
+    }
+    async getDetail(id: number):Promise<User>{
+        return this.prismaService.user.findFirst({
+            where:{
+                id
+            }
+        })
+    }
+    async update(id: number, data: UpdateUserDto):Promise<User>{
+        return await this.prismaService.user.update({
+            where:{id},
+            data
+        })
+    }
+    async deleteById(id:number):Promise<SoftDeleteUserDto>{
+        console.log('delete id: ', id)
+        return await this.prismaService.user.update({where:{id},
+        data:{
+            status: 0,
+            deletedAt: new Date()
+        }})
+    }
+    async multipleDelete(ids: String[]){
+        const updatePromises = ids.map(async (id) => {
+            try {
+                const updatedUser = await this.prismaService.user.update({
+                    where: { id: Number(id), status: 1},
+                    data: {
+                        status: 0,
+                        deletedAt: new Date(),
+                    },
+                    select: {
+                        status: true,
+                        deletedAt: true,
+                    },
+                });
+                if (!updatedUser) {
+                    throw new NotFoundException(`User with ID ${id} not found`);
+                }
+                return updatedUser;
+            } catch (error) {
+                // Handle the error, for example, log it and continue with the next iteration
+                console.error(`Error updating user with ID ${id}:`, error.message);
+                return null;
+            }
+        });
+        const updatedResults = await Promise.all(updatePromises);
+        updatedResults.filter(result => result !== null); 
+        return updatedResults
     }
 }

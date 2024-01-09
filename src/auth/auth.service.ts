@@ -31,7 +31,8 @@ export class AuthService {
         // step 1: checking is exist by email
         const user = await this.prismaService.user.findUnique({
             where:{
-                email:data.email
+                email:data.email,
+                status: 1
             }
         })
         if(!user){
@@ -47,12 +48,12 @@ export class AuthService {
 
     private async generateToken(payload:{id:number, email:string}):Promise<any>{
         const access_token = await this.jwtService.signAsync(payload,{
-            secret: process.env.ACCESS_TOKEN_KEY,
-            expiresIn: '1h'
+            secret: process.env.SECRET,
+            expiresIn: process.env.EXPIRES_ACCESS_TOKEN
         })
         const refresh_token = await this.jwtService.signAsync(payload,{
-            secret: process.env.REFRESH_TOKEN_KEY,
-            expiresIn: '7d'
+            secret: process.env.SECRET,
+            expiresIn: process.env.EXPIRES_REFRESH_TOKEN
         })
         await this.prismaService.user.update({
             where: { id: payload.id },

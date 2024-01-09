@@ -1,4 +1,4 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -16,4 +16,6 @@ import { APP_PIPE } from '@nestjs/core';
     },
     PrismaService],
 })
-export class AppModule {}
+export class AppModule {
+
+}

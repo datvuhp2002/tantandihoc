@@ -11,7 +11,6 @@ export class CreateUserDto {
     password: string
     status: number
 }
-
 export interface UserFilterType{
     items_per_page?:number
     page?:number
@@ -24,6 +23,14 @@ export interface UserPaginationResponseType{
     itemsPerPage?:number
 } 
 export class UpdateUserDto{
-    name: string
+    username: string
+    avatar?: string
     status: number
+}
+export class SoftDeleteUserDto{
+    status: number
+    deletedAt: Date
+}
+export class softMultipleDeleteUserDto{
+    data: {status: number, deletedAt:Date }[];
 }
