@@ -54,6 +54,7 @@ model User {
   status         Int              @default(1)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
+  deletedAt      DateTime?
   posts          Post[]
   UserProgress   UserProgress[]
   UserDictionary UserDictionary[]
@@ -109,22 +110,24 @@ model UserDictionary {
 }
 
 model Post {
-  id          Int           @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   thumbnail   String
   description String
   summary     String
-  content     String        @db.LongText
-  status      Int           @default(1)
-  owner       User          @relation(fields: [ownerId], references: [id])
+  content     String    @db.LongText
+  status      Int       @default(1)
+  owner       User      @relation(fields: [ownerId], references: [id])
   ownerId     Int
-  category    Category      @relation(fields: [categoryId], references: [id])
+  category    Category  @relation(fields: [categoryId], references: [id])
   categoryId  Int
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime?     @updatedAt
-  Comment     CommentPost[]
-  SavedPost   SavedPost[]
-  PostTag     PostTag[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  deletedAt   DateTime?
+
+  Comment   CommentPost[]
+  SavedPost SavedPost[]
+  PostTag   PostTag[]
 }
 
 model Category {
