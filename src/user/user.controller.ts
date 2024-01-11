@@ -3,7 +3,8 @@ import { UserService } from './user.service';
 import { CreateUserDto, SoftDeleteUserDto, UpdateUserDto, UserFilterType, UserPaginationResponseType, softMultipleDeleteUserDto } from './dto/user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { User } from '@prisma/client';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService){}

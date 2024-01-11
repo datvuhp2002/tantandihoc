@@ -15,11 +15,15 @@ export interface UserFilterType{
     items_per_page?:number
     page?:number
     search?:string
+    nextPage?: number
+    previousPage?: number
 }
 export interface UserPaginationResponseType{
     data: {username: string; email: string,avatar: string,createdAt:Date }[];
     total: number
     currentPage: number
+    nextPage?: number
+    previousPage?: number
     itemsPerPage?:number
 } 
 export class UpdateUserDto{

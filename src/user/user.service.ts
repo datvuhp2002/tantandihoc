@@ -82,9 +82,14 @@ export class UserService {
                 ]
             },
         })
+        const lastPage = Math.ceil(total/items_per_page);
+        const nextPage = page + 1 > lastPage ? null : page + 1;
+        const previousPage = page - 1 < 1 ? null : page - 1;
         return{ 
             data:users,
             total,
+            nextPage,
+            previousPage,
             currentPage: page,
             itemsPerPage: items_per_page
         }
