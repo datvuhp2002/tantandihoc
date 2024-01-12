@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.servcie';
-import { CreateUserDto, SoftDeleteUserDto, UpdateUserDto, UserFilterType, UserPaginationResponseType, softMultipleDeleteUserDto } from './dto/user.dto';
+import { CreateUserDto, SoftDeleteUserDto, UpdateUserDto, UploadAvatarResult, UserFilterType, UserPaginationResponseType, softMultipleDeleteUserDto } from './dto/user.dto';
 import {hash} from 'bcrypt'
 @Injectable()
 export class UserService {
@@ -95,7 +95,7 @@ export class UserService {
         }
     }
     async getDetail(id: number):Promise<User>{
-        return this.prismaService.user.findFirst({
+        return this.prismaService.user.findUnique({
             where:{
                 id
             }
@@ -142,5 +142,11 @@ export class UserService {
         const updatedResults = await Promise.all(updatePromises);
         updatedResults.filter(result => result !== null); 
         return updatedResults
+    }
+    async uploadAvatar(id: number, avatar: string):Promise<UploadAvatarResult>{
+        return await this.prismaService.user.update({
+            where:{id},
+            data: {avatar}
+        })
     }
 }

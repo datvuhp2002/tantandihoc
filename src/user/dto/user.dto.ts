@@ -38,3 +38,7 @@ export class SoftDeleteUserDto{
 export class softMultipleDeleteUserDto{
     data: {status: number, deletedAt:Date }[];
 }
+export class UploadAvatarResult{
+    @IsNotEmpty()
+    avatar: string
+}
