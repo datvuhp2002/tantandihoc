@@ -4,11 +4,13 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaService } from './prisma.servcie';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { PostModule } from './post/post.module';
+import { AuthGuard } from './auth/auth.guard';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, UserModule, PostModule],
+  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot()],
   controllers: [AppController],
   providers: [AppService,
     {
