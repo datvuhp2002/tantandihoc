@@ -10,6 +10,7 @@ async function bootstrap() {
   .setVersion('1.0')
   .addTag('Auth')
   .addTag('Users')
+  .addTag('Posts')
   .build()
   const document = SwaggerModule.createDocument(app,config)
   SwaggerModule.setup('api', app, document)

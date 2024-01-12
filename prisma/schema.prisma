@@ -110,24 +110,22 @@ model UserDictionary {
 }
 
 model Post {
-  id          Int       @id @default(autoincrement())
-  title       String
-  thumbnail   String
-  description String
-  summary     String
-  content     String    @db.LongText
-  status      Int       @default(1)
-  owner       User      @relation(fields: [ownerId], references: [id])
-  ownerId     Int
-  category    Category  @relation(fields: [categoryId], references: [id])
-  categoryId  Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  deletedAt   DateTime?
-
-  Comment   CommentPost[]
-  SavedPost SavedPost[]
-  PostTag   PostTag[]
+  id         Int           @id @default(autoincrement())
+  title      String
+  thumbnail  String
+  summary    String
+  content    String        @db.LongText
+  status     Int           @default(1)
+  owner      User          @relation(fields: [ownerId], references: [id])
+  ownerId    Int
+  category   Category      @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime?     @updatedAt
+  deletedAt  DateTime?
+  Comment    CommentPost[]
+  SavedPost  SavedPost[]
+  PostTag    PostTag[]
 }
 
 model Category {
