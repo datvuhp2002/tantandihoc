@@ -109,7 +109,7 @@ export class PostService {
     }
     async getDetail(id:number):Promise<Post>{
         return this.prismaService.post.findUnique({
-            where:{id},
+            where:{id,status:1},
             include:{
                 owner:{
                     select:{

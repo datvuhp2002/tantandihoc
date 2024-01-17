@@ -9,9 +9,10 @@ import { PostModule } from './post/post.module';
 import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule } from '@nestjs/config';
 import { LessonModule } from './lesson/lesson.module';
+import { CourseModule } from './course/course.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule],
+  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule],
   controllers: [AppController],
   providers: [AppService,
     {
