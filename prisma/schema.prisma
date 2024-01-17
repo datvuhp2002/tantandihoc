@@ -27,8 +27,11 @@ model Lesson {
   level            Int
   createdAt        DateTime        @default(now())
   updatedAt        DateTime?       @updatedAt
+  thumbnail        String?
   ownership_course Course          @relation(fields: [course_id], references: [id])
   course_id        Int
+  status           Int             @default(1)
+  deletedAt        DateTime?
   Quizze           Quizz[]
   UserProgress     UserProgress[]
   CommentLesson    CommentLesson[]
