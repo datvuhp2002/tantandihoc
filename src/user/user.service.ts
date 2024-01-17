@@ -116,7 +116,7 @@ export class UserService {
         }})
     }
     async multipleDelete(ids: String[]){
-        const updatePromises = ids.map(async (id) => {
+        const updatePromises = ids.map(async id => {
             try {
                 const updatedUser = await this.prismaService.user.update({
                     where: { id: Number(id), status: 1},

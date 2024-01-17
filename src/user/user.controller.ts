@@ -41,10 +41,9 @@ export class UserController {
         console.log("delete user => ", id);
         return this.userService.deleteById(id);
     }
-    @Delete('multipleSoftDelete')
+    @Delete('multiple')
     @UseGuards(AuthGuard)
-    multipleDelete(@Query('ids', new ParseArrayPipe({items: String, separator: ','}))ids: string[]){
-        console.log("Multiple Deleted => ",ids)
+    multipleDelete(@Query('ids', new ParseArrayPipe({items: String, separator:','}))ids: String[]){
         return this.userService.multipleDelete(ids);
     }
     @Post('upload-avatar')

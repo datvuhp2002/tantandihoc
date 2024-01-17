@@ -8,9 +8,10 @@ import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { PostModule } from './post/post.module';
 import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule } from '@nestjs/config';
+import { LessonModule } from './lesson/lesson.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot()],
+  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule],
   controllers: [AppController],
   providers: [AppService,
     {
