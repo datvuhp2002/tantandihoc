@@ -11,7 +11,6 @@ export class LessonController {
     constructor(private lessonService: LessonService){}
     @Get()
     getAll(@Query() params:LessonFilterType):Promise<LessonPaginationResponseType>{
-        console.log('getAll lesson');
         return this.lessonService.getAll(params);
     }
     @Get(':id')
@@ -41,7 +40,7 @@ export class LessonController {
         if(!file){
             throw new BadRequestException('File is required')
         }
-        return this.lessonService.create({...data, thumbnail: 'post/'+file.filename});
+        return this.lessonService.create({...data, thumbnail: 'lesson/'+file.filename});
     }
     @Delete(":id")
     delete(@Param('id', ParseIntPipe) id : number){

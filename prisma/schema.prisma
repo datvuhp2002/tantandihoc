@@ -16,10 +16,13 @@ model Course {
   thumbnail    String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime?      @updatedAt
+  deletedAt    DateTime?
+  status       Int            @default(1)
   Lesson       Lesson[]
   UserProgress UserProgress[]
 }
 
+// done
 model Lesson {
   id               Int             @id @default(autoincrement())
   title            String
@@ -47,6 +50,7 @@ model Quizz {
   UserProgress     UserProgress[]
 }
 
+// done
 model User {
   id             Int              @id @default(autoincrement())
   username       String
@@ -112,6 +116,7 @@ model UserDictionary {
   updated_at           DateTime?  @updatedAt
 }
 
+// done
 model Post {
   id         Int           @id @default(autoincrement())
   title      String

@@ -91,7 +91,7 @@ export class LessonService {
         }
     }
     async getDetail(id: number):Promise<Lesson>{
-        return this.prismaService.lesson.findUnique({where: {id}})
+        return this.prismaService.lesson.findUnique({where: {id,status: 1}})
     }
     async create(data: CreateLessonDto):Promise<Lesson>{
         try{
