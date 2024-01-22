@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Lesson } from '@prisma/client';
 import { PrismaService } from 'src/prisma.servcie';
-import { CreateLessonDto, LessonFilterType, LessonPaginationResponseType } from './dto/lesson.dto';
+import { CreateLessonDto, LessonFilterType, LessonPaginationResponseType, UpdateLessonDto } from './dto/lesson.dto';
 
 @Injectable()
 export class LessonService {
@@ -110,5 +110,8 @@ export class LessonService {
                 status: 0,
                 deletedAt: new Date()
         }})
+    }
+    async update(id: number, data:UpdateLessonDto):Promise<Lesson>{
+        return this.prismaService.lesson.update({where:{id}, data})
     }
 }

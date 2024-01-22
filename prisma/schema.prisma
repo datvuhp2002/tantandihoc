@@ -10,6 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// done
 model Course {
   id           Int            @id @default(autoincrement())
   name         String
@@ -35,18 +36,21 @@ model Lesson {
   course_id        Int
   status           Int             @default(1)
   deletedAt        DateTime?
-  Quizze           Quizz[]
+  Quizze           Quiz[]
   UserProgress     UserProgress[]
   CommentLesson    CommentLesson[]
 }
 
-model Quizz {
+// done
+model Quiz {
   id               Int            @id @default(autoincrement())
   onwership_Lesson Lesson         @relation(fields: [lesson_id], references: [id])
   lesson_id        Int
   answer           String
+  status           Int            @default(1)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime?      @updatedAt
+  deletedAt        DateTime?
   UserProgress     UserProgress[]
 }
 
@@ -78,7 +82,7 @@ model UserProgress {
   course_id         Int
   ownership_lesson  Lesson    @relation(fields: [lesson_id], references: [id])
   lesson_id         Int
-  onwership_quizze  Quizz     @relation(fields: [quizz_id], references: [id])
+  onwership_quizze  Quiz      @relation(fields: [quizz_id], references: [id])
   quizz_id          Int
   score             Int
   status            Int       @default(1)
@@ -93,6 +97,8 @@ model CommentLesson {
   author_id        Int
   ownership_lesson Lesson    @relation(fields: [lesson_id], references: [id])
   lesson_id        Int
+  status           Int       @default(1)
+  deletedAt        DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
 }
