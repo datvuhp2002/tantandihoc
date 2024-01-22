@@ -26,4 +26,9 @@ export interface LessonPaginationResponseType{
     previousPage?: number
     itemsPerPage?:number
 } 
-export class UpdateLessonDto{}
+export class UpdateLessonDto{
+    title: string
+    content:string
+    thumbnail:string
+    level:number
+}

@@ -10,9 +10,13 @@ import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule } from '@nestjs/config';
 import { LessonModule } from './lesson/lesson.module';
 import { CourseModule } from './course/course.module';
+import { QuizModule } from './quiz/quiz.module';
+import { CategoryModule } from './category/category.module';
+import { UserProgressModule } from './user-progress/user-progress.module';
+import { CommentLessonModule } from './comment-lesson/comment-lesson.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule],
+  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule, QuizModule, CategoryModule, UserProgressModule, CommentLessonModule ],
   controllers: [AppController],
   providers: [AppService,
     {

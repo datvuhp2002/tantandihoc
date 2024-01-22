@@ -1,7 +1,7 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { Lesson } from '@prisma/client';
-import { CreateLessonDto, LessonFilterType, LessonPaginationResponseType } from './dto/lesson.dto';
+import { CreateLessonDto, LessonFilterType, LessonPaginationResponseType, UpdateLessonDto } from './dto/lesson.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
@@ -14,8 +14,12 @@ export class LessonController {
         return this.lessonService.getAll(params);
     }
     @Get(':id')
-    getDetail(@Param('id') id:String){
-        return this.lessonService.getDetail(Number(id));
+    getDetail(@Param('id',ParseIntPipe) id:number){
+        return this.lessonService.getDetail(id);
+    }
+    @Put(':id')
+    update(@Param('id',ParseIntPipe) id:number,@Body() data:UpdateLessonDto):Promise<Lesson>{
+        return this.lessonService.update(id,data);
     }
     @Post()
     @UseInterceptors(FileInterceptor('thumbnail',{
@@ -46,11 +50,4 @@ export class LessonController {
     delete(@Param('id', ParseIntPipe) id : number){
         return this.lessonService.delete(id)
     }
-    ckeUpload(@Body() data:any, @UploadedFile() file: Express.Multer.File ){
-        console.log(data)
-        return {
-            'url': `ckeditor/${file.filename}`
-        }
-    }
-
 }
