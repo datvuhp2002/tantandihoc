@@ -3,7 +3,7 @@ import { CommentLessonService } from './comment-lesson.service';
 import { CommentLessonFilterType, CommentLessonPaginationResponseType, CreateCommentLessonDto, UpdateCommentLessonDto } from './dto/comment-lesson.dto';
 import { CommentLesson } from '@prisma/client';
 
-@Controller('comment-lesson')
+@Controller('comment-lessons')
 export class CommentLessonController {
     constructor(private commentLessonService: CommentLessonService){}
     @Get(':id')
