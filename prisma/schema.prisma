@@ -39,6 +39,7 @@ model Lesson {
   Quizze           Quiz[]
   UserProgress     UserProgress[]
   CommentLesson    CommentLesson[]
+  Vocabulary       Vocabulary[]
 }
 
 // done
@@ -86,8 +87,8 @@ model UserProgress {
   quizz_id          Int
   score             Int
   status            Int       @default(1)
-  created_at        DateTime  @default(now())
-  updated_at        DateTime? @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
 }
 
 // done
@@ -104,12 +105,18 @@ model CommentLesson {
   updatedAt        DateTime? @updatedAt
 }
 
-model vocabulary {
+model Vocabulary {
   id                 Int              @id @default(autoincrement())
+  word               String
+  meaning            String
+  ownership_lesson   Lesson           @relation(fields: [lesson_id], references: [id])
+  lesson_id          Int
   ownership_category Category         @relation(fields: [category_id], references: [id])
   category_id        Int
-  created_at         DateTime         @default(now())
-  updated_at         DateTime?        @updatedAt
+  status             Int              @default(1)
+  deletedAt          DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime?        @updatedAt
   UserDictionary     UserDictionary[]
 }
 
@@ -117,10 +124,10 @@ model UserDictionary {
   id                   Int        @id @default(autoincrement())
   author               User       @relation(fields: [author_id], references: [id])
   author_id            Int
-  ownership_vocabulary vocabulary @relation(fields: [vocabulary_id], references: [id])
+  ownership_vocabulary Vocabulary @relation(fields: [vocabulary_id], references: [id])
   vocabulary_id        Int
-  created_at           DateTime   @default(now())
-  updated_at           DateTime?  @updatedAt
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime?  @updatedAt
 }
 
 // done
@@ -150,9 +157,10 @@ model Category {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?    @updatedAt
   Post        Post[]
-  vocabulary  vocabulary[]
+  vocabulary  Vocabulary[]
 }
 
+// done
 model CommentPost {
   id             Int       @id @default(autoincrement())
   message        String
