@@ -90,6 +90,7 @@ model UserProgress {
   updated_at        DateTime? @updatedAt
 }
 
+// done
 model CommentLesson {
   id               Int       @id @default(autoincrement())
   message          String
@@ -159,6 +160,8 @@ model CommentPost {
   author_id      Int
   ownership_post Post      @relation(fields: [post_id], references: [id])
   post_id        Int
+  status         Int       @default(1)
+  deletedAt      DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt
 }
