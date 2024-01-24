@@ -18,7 +18,13 @@ export class LessonController {
         return this.lessonService.getDetail(id);
     }
     @Put(':id')
-    update(@Param('id',ParseIntPipe) id:number,@Body() data:UpdateLessonDto):Promise<Lesson>{
+    update(@Param('id',ParseIntPipe) id:number,@Req() req: any,@Body() data:UpdateLessonDto,@UploadedFile() file: Express.Multer.File):Promise<Lesson>{
+        if(req.fileValidationError){
+            throw new BadRequestException(req.fileValidationError);
+        }
+        if(file ){
+            data.thumbnail = 'lesson/' + file.filename;
+        }
         return this.lessonService.update(id,data);
     }
     @Post()
