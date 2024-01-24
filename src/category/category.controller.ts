@@ -3,7 +3,7 @@ import { CategoryService } from './category.service';
 import { CategoryFilterType, CategoryPaginationResponseType, CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { Category } from '@prisma/client';
 
-@Controller('category')
+@Controller('categories')
 export class CategoryController {
     constructor(private categoryService: CategoryService){}
     @Post()

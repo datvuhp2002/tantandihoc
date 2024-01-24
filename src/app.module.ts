@@ -16,9 +16,10 @@ import { UserProgressModule } from './user-progress/user-progress.module';
 import { CommentLessonModule } from './comment-lesson/comment-lesson.module';
 import { CommentPostModule } from './comment-post/comment-post.module';
 import { VocabularyModule } from './vocabulary/vocabulary.module';
+import { UserDictionaryModule } from './user-dictionary/user-dictionary.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule, QuizModule, CategoryModule, UserProgressModule, CommentLessonModule, CommentPostModule, VocabularyModule ],
+  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule, QuizModule, CategoryModule, UserProgressModule, CommentLessonModule, CommentPostModule, VocabularyModule, UserDictionaryModule ],
   controllers: [AppController],
   providers: [AppService,
     {
