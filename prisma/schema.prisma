@@ -181,6 +181,7 @@ model CommentPost {
   updatedAt      DateTime? @updatedAt
 }
 
+// done
 model SavedPost {
   id             Int       @id @default(autoincrement())
   author         User      @relation(fields: [author_id], references: [id])
@@ -188,7 +189,7 @@ model SavedPost {
   ownership_post Post      @relation(fields: [post_id], references: [id])
   post_id        Int
   status         Int       @default(1)
-  DeletedAt      DateTime?
+  deletedAt      DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt
 }
@@ -196,6 +197,8 @@ model SavedPost {
 model Tag {
   id        Int       @id @default(autoincrement())
   name      String
+  status    Int       @default(1)
+  deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   PostTag   PostTag[]

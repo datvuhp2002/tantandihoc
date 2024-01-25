@@ -83,6 +83,6 @@ export class SavedPostService {
         }
     }
     async delete(id:number){
-        return this.prismaService.savedPost.update({where:{id},data:{status:0,DeletedAt:new Date}})
+        return this.prismaService.savedPost.update({where:{id},data:{status:0,deletedAt:new Date}})
     }
 }

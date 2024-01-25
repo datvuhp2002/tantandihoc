@@ -23,7 +23,7 @@ export class VocabularyController {
         return this.vocabularyService.update(id,data)
     }
     @Delete(':id')
-    delete(@Param('id') id: number){
+    delete(@Param('id',ParseIntPipe) id: number){
         return this.vocabularyService.delete(id)
     }
 }
