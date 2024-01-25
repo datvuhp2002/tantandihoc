@@ -19,9 +19,10 @@ import { VocabularyModule } from './vocabulary/vocabulary.module';
 import { UserDictionaryModule } from './user-dictionary/user-dictionary.module';
 import { SavedPostModule } from './saved-post/saved-post.module';
 import { TagModule } from './tag/tag.module';
+import { PostTagModule } from './post-tag/post-tag.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule, QuizModule, CategoryModule, UserProgressModule, CommentLessonModule, CommentPostModule, VocabularyModule, UserDictionaryModule, SavedPostModule, TagModule ],
+  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule, QuizModule, CategoryModule, UserProgressModule, CommentLessonModule, CommentPostModule, VocabularyModule, UserDictionaryModule, SavedPostModule, TagModule, PostTagModule ],
   controllers: [AppController],
   providers: [AppService,
     {
