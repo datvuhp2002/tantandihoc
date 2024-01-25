@@ -36,7 +36,7 @@ model Lesson {
   course_id        Int
   status           Int             @default(1)
   deletedAt        DateTime?
-  Quizze           Quiz[]
+  Quiz             Quiz[]
   UserProgress     UserProgress[]
   CommentLesson    CommentLesson[]
   Vocabulary       Vocabulary[]
@@ -79,14 +79,15 @@ model UserProgress {
   id                Int       @id @default(autoincrement())
   author            User      @relation(fields: [author_id], references: [id])
   author_id         Int
-  onswership_course Course    @relation(fields: [course_id], references: [id])
-  course_id         Int
-  ownership_lesson  Lesson    @relation(fields: [lesson_id], references: [id])
-  lesson_id         Int
-  onwership_quizze  Quiz      @relation(fields: [quizz_id], references: [id])
-  quizz_id          Int
-  score             Int
+  onswership_course Course?   @relation(fields: [course_id], references: [id])
+  course_id         Int?
+  ownership_lesson  Lesson?   @relation(fields: [lesson_id], references: [id])
+  lesson_id         Int?
+  onwership_quiz    Quiz?     @relation(fields: [quiz_id], references: [id])
+  quiz_id           Int?
+  score             Int?
   status            Int       @default(1)
+  deletedAt         DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime? @updatedAt
 }
@@ -205,6 +206,7 @@ model Tag {
   PostTag   PostTag[]
 }
 
+// done
 model PostTag {
   id             Int       @id @default(autoincrement())
   ownership_post Post      @relation(fields: [post_id], references: [id])

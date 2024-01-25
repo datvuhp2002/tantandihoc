@@ -3,7 +3,7 @@ import { PostTagService } from './post-tag.service';
 import { PostTag } from '@prisma/client';
 import { CreatePostTagDto, PostTagFilterType, PostTagPaginationResponseType } from './dto/post-tag.dto';
 
-@Controller('post-tag')
+@Controller('post-tags')
 export class PostTagController {
     constructor(private postTagService: PostTagService){}
     @Post()

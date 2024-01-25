@@ -35,7 +35,7 @@ export class LessonService {
                 
             },
             include:{
-                Quizze:{
+                Quiz:{
                     select:{
                         answer: true
                     }
