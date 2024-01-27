@@ -16,8 +16,13 @@ export class UserDictionaryController {
     getAll(@Body() data: UserDictionaryFilterType):Promise<UserDictionaryPaginationResponseType>{
         return this.userDictionaryService.getAll(data)
     }
+    @Get()
+    finished(@Body() data: UserDictionaryFilterType):Promise<UserDictionaryPaginationResponseType>{
+        return this.userDictionaryService.getAll(data)
+    }
     @Delete(':id')
     delete(@Param('id',ParseIntPipe) id:number){
         return this.userDictionaryService.delete(id)
     }
+    
 }
