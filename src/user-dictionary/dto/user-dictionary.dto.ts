@@ -9,6 +9,7 @@ export class CreateUserDictionaryDto{
 export interface UserDictionaryFilterType{
     items_per_page?:number
     page?:number
+    search?:string
     nextPage?: number
     previousPage?: number
 }
