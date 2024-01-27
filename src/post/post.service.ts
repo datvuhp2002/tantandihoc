@@ -2,10 +2,12 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestj
 import { PrismaService } from 'src/prisma.servcie';
 import { CreatePostDto, PostFilterType, PostPaginationResponseType, UpdatePostDto } from './dto/posts.dto';
 import { Post } from '@prisma/client';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Injectable()
 export class PostService {
     constructor(private prismaService: PrismaService){}
+    @Roles('Admin','User')
     async create(id:number,data: CreatePostDto):Promise<Post>{
         try{
             return await this.prismaService.post.create({
@@ -16,6 +18,7 @@ export class PostService {
             throw new HttpException('can not create post', HttpStatus.BAD_REQUEST)
         }
     }
+    @Roles('Admin','User')
     async getAll(filters: PostFilterType): Promise<PostPaginationResponseType>{
         const items_per_page = Number(filters.items_per_page) || 10;
         const page = Number(filters.page) || 1
@@ -107,6 +110,7 @@ export class PostService {
             itemsPerPage: items_per_page
         }
     }
+    @Roles('Admin','User')
     async getDetail(id:number):Promise<Post>{
         return this.prismaService.post.findUnique({
             where:{id,status:1},
@@ -127,6 +131,7 @@ export class PostService {
             },
         })
     }
+    @Roles('Admin','User')
     async update(id:number,data: UpdatePostDto):Promise<Post>{
         try{
             return await this.prismaService.post.update({
@@ -138,6 +143,7 @@ export class PostService {
             throw new HttpException('can not update post', HttpStatus.BAD_REQUEST)
         }
     }
+    @Roles('Admin','User')
     async delete(id: number){
         return await this.prismaService.post.update({
             where:{id},
@@ -146,6 +152,7 @@ export class PostService {
                 deletedAt: new Date()
             }})
     }
+    @Roles('Admin','User')
     async multipleDelete(ids: Number[]){
         const updatePromises = ids.map(async (id) => {
             try {

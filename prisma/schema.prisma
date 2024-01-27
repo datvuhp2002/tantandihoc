@@ -67,6 +67,7 @@ model User {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
   deletedAt      DateTime?
+  roles          String           @default("User")
   posts          Post[]
   UserProgress   UserProgress[]
   UserDictionary UserDictionary[]

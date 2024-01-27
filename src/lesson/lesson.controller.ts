@@ -5,19 +5,23 @@ import { CreateLessonDto, LessonFilterType, LessonPaginationResponseType, Update
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Controller('lessons')
 export class LessonController {
     constructor(private lessonService: LessonService){}
     @Get()
+    @Roles('Admin','User')
     getAll(@Query() params:LessonFilterType):Promise<LessonPaginationResponseType>{
         return this.lessonService.getAll(params);
     }
     @Get(':id')
+    @Roles('Admin','User')
     getDetail(@Param('id',ParseIntPipe) id:number){
         return this.lessonService.getDetail(id);
     }
     @Put(':id')
+    @Roles('Admin')
     update(@Param('id',ParseIntPipe) id:number,@Req() req: any,@Body() data:UpdateLessonDto,@UploadedFile() file: Express.Multer.File):Promise<Lesson>{
         if(req.fileValidationError){
             throw new BadRequestException(req.fileValidationError);
@@ -28,6 +32,7 @@ export class LessonController {
         return this.lessonService.update(id,data);
     }
     @Post()
+    @Roles('Admin')
     @UseInterceptors(FileInterceptor('thumbnail',{
         storage: storageConfig('lesson'),
         fileFilter:(req,file,cb)=>{
@@ -53,6 +58,7 @@ export class LessonController {
         return this.lessonService.create({...data, thumbnail: 'lesson/'+file.filename});
     }
     @Delete(":id")
+    @Roles('Admin')
     delete(@Param('id', ParseIntPipe) id : number){
         return this.lessonService.delete(id)
     }

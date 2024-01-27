@@ -20,11 +20,20 @@ import { UserDictionaryModule } from './user-dictionary/user-dictionary.module';
 import { SavedPostModule } from './saved-post/saved-post.module';
 import { TagModule } from './tag/tag.module';
 import { PostTagModule } from './post-tag/post-tag.module';
+import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule, QuizModule, CategoryModule, UserProgressModule, CommentLessonModule, CommentPostModule, VocabularyModule, UserDictionaryModule, SavedPostModule, TagModule, PostTagModule ],
   controllers: [AppController],
   providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard
+    },
     {
       provide:APP_PIPE,
       useClass: ValidationPipe,
