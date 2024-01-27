@@ -5,11 +5,12 @@ import { Course } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
-
+import { Roles } from 'src/auth/decorator/roles.decorator';
 @Controller('courses')
 export class CourseController {
     constructor(private courseService: CourseService){}
     @Post()
+    @Roles('Admin')
     @UseInterceptors(FileInterceptor('thumbnail',{
         storage: storageConfig('course'),
         fileFilter:(req,file,cb)=>{
@@ -35,14 +36,17 @@ export class CourseController {
         return this.courseService.create({...data, thumbnail: 'course/'+file.filename});
     }
     @Get(':id')
+    @Roles('Admin')
     getDetail(@Param('id',ParseIntPipe) id: number){
         return this.courseService.getDetail(id);
     }
     @Get()
+    @Roles('Admin')
     getAll(@Query() params:CourseFilterType):Promise<CoursePaginationResponseType>{
         return this.courseService.getAll(params);
     }   
     @Delete(':id')
+    @Roles('Admin')
     delete(@Param('id',ParseIntPipe) id: number){
         this.courseService.delete(id);
     }
