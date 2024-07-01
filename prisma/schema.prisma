@@ -9,37 +9,46 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 // done
 model Course {
   id           Int            @id @default(autoincrement())
   name         String
   thumbnail    String
   createdAt    DateTime       @default(now())
+  description  String @db.LongText
   updatedAt    DateTime?      @updatedAt
   deletedAt    DateTime?
   status       Int            @default(1)
   Lesson       Lesson[]
   UserProgress UserProgress[]
+  CourseReceived CourseReceived[]
 }
-
+model CourseReceived {
+  id         Int      @id @default(autoincrement())
+  name    String
+  course_id   Int
+  Course     Course   @relation(fields: [course_id], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime? @updatedAt
+  status Int @default(1)
+  deletedAt DateTime? 
+}
 // done
 model Lesson {
   id               Int             @id @default(autoincrement())
   title            String
   content          String          @db.LongText
-  level            Int
   createdAt        DateTime        @default(now())
   updatedAt        DateTime?       @updatedAt
-  thumbnail        String?
   ownership_course Course          @relation(fields: [course_id], references: [id])
   course_id        Int
   status           Int             @default(1)
   deletedAt        DateTime?
+  videoUrl         String?         // Lưu trữ đường link YouTube hoặc các đường link video khác
+  videoFile        String?         // Lưu trữ tên file hoặc đường dẫn tới file video tải lên từ client
   Quiz             Quiz[]
   UserProgress     UserProgress[]
   CommentLesson    CommentLesson[]
-  Vocabulary       Vocabulary[]
 }
 
 // done
@@ -70,7 +79,6 @@ model User {
   roles          String           @default("User")
   posts          Post[]
   UserProgress   UserProgress[]
-  UserDictionary UserDictionary[]
   Comment        CommentPost[]
   CommentLesson  CommentLesson[]
   SavedPost      SavedPost[]
@@ -81,7 +89,7 @@ model UserProgress {
   id                Int       @id @default(autoincrement())
   author            User      @relation(fields: [author_id], references: [id])
   author_id         Int
-  onswership_course Course?   @relation(fields: [course_id], references: [id])
+  ownership_course Course?   @relation(fields: [course_id], references: [id])
   course_id         Int?
   ownership_lesson  Lesson?   @relation(fields: [lesson_id], references: [id])
   lesson_id         Int?
@@ -97,11 +105,12 @@ model UserProgress {
 // done
 model CommentLesson {
   id               Int       @id @default(autoincrement())
-  message          String
+  message          String   @db.LongText
   author           User      @relation(fields: [author_id], references: [id])
   author_id        Int
   ownership_lesson Lesson    @relation(fields: [lesson_id], references: [id])
   lesson_id        Int
+  reply             Int?
   status           Int       @default(1)
   deletedAt        DateTime?
   createdAt        DateTime  @default(now())
@@ -109,40 +118,11 @@ model CommentLesson {
 }
 
 // done
-model Vocabulary {
-  id                 Int              @id @default(autoincrement())
-  word               String
-  meaning            String
-  ownership_lesson   Lesson           @relation(fields: [lesson_id], references: [id])
-  lesson_id          Int
-  ownership_category Category         @relation(fields: [category_id], references: [id])
-  category_id        Int
-  status             Int              @default(1)
-  deletedAt          DateTime?
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime?        @updatedAt
-  UserDictionary     UserDictionary[]
-}
-
-// done
-model UserDictionary {
-  id                   Int        @id @default(autoincrement())
-  author               User       @relation(fields: [author_id], references: [id])
-  author_id            Int
-  ownership_vocabulary Vocabulary @relation(fields: [vocabulary_id], references: [id])
-  vocabulary_id        Int
-  status               Int        @default(1)
-  deletedAt            DateTime?
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime?  @updatedAt
-}
-
-// done
 model Post {
   id         Int           @id @default(autoincrement())
   title      String
   thumbnail  String
-  summary    String
+  summary    String        @db.LongText
   content    String        @db.LongText
   status     Int           @default(1)
   owner      User          @relation(fields: [ownerId], references: [id])
@@ -154,7 +134,6 @@ model Post {
   deletedAt  DateTime?
   Comment    CommentPost[]
   SavedPost  SavedPost[]
-  PostTag    PostTag[]
 }
 
 // done
@@ -167,17 +146,17 @@ model Category {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?    @updatedAt
   Post        Post[]
-  vocabulary  Vocabulary[]
 }
 
 // done
 model CommentPost {
   id             Int       @id @default(autoincrement())
-  message        String
+  message        String   @db.LongText
   author         User      @relation(fields: [author_id], references: [id])
   author_id      Int
   ownership_post Post      @relation(fields: [post_id], references: [id])
   post_id        Int
+  reply Int?
   status         Int       @default(1)
   deletedAt      DateTime?
   createdAt      DateTime  @default(now())
@@ -197,24 +176,3 @@ model SavedPost {
   updatedAt      DateTime? @updatedAt
 }
 
-// done
-model Tag {
-  id        Int       @id @default(autoincrement())
-  name      String
-  status    Int       @default(1)
-  deletedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  PostTag   PostTag[]
-}
-
-// done
-model PostTag {
-  id             Int       @id @default(autoincrement())
-  ownership_post Post      @relation(fields: [post_id], references: [id])
-  post_id        Int
-  ownership_tag  Tag       @relation(fields: [tag_id], references: [id])
-  tag_id         Int
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime? @updatedAt
-}

@@ -1,9 +1,14 @@
-import { MiddlewareConsumer, Module, RequestMethod, ValidationPipe } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { PrismaService } from './prisma.servcie';
+import { PrismaService } from './prisma.service';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { PostModule } from './post/post.module';
 import { AuthGuard } from './auth/auth.guard';
@@ -15,31 +20,44 @@ import { CategoryModule } from './category/category.module';
 import { UserProgressModule } from './user-progress/user-progress.module';
 import { CommentLessonModule } from './comment-lesson/comment-lesson.module';
 import { CommentPostModule } from './comment-post/comment-post.module';
-import { VocabularyModule } from './vocabulary/vocabulary.module';
-import { UserDictionaryModule } from './user-dictionary/user-dictionary.module';
 import { SavedPostModule } from './saved-post/saved-post.module';
-import { TagModule } from './tag/tag.module';
-import { PostTagModule } from './post-tag/post-tag.module';
 import { RolesGuard } from './auth/roles.guard';
+import { CourseReceivedModule } from './course-received/course-received.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PostModule,ConfigModule.forRoot(), LessonModule, CourseModule, QuizModule, CategoryModule, UserProgressModule, CommentLessonModule, CommentPostModule, VocabularyModule, UserDictionaryModule, SavedPostModule, TagModule, PostTagModule ],
+  imports: [
+    AuthModule,
+    UserModule,
+    PostModule,
+    ConfigModule.forRoot(),
+    LessonModule,
+    CourseModule,
+    QuizModule,
+    CategoryModule,
+    UserProgressModule,
+    CommentLessonModule,
+    CommentPostModule,
+    SavedPostModule,
+    CourseReceivedModule,
+    CloudinaryModule,
+  ],
   controllers: [AppController],
-  providers: [AppService,
+  providers: [
+    AppService,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard
+      useClass: AuthGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard
+      useClass: RolesGuard,
     },
     {
-      provide:APP_PIPE,
+      provide: APP_PIPE,
       useClass: ValidationPipe,
     },
-    PrismaService],
+    PrismaService,
+  ],
 })
-export class AppModule {
-
-}
+export class AppModule {}
