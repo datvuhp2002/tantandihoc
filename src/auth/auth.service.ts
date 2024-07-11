@@ -16,6 +16,7 @@ export class AuthService {
     // step 1 : checking email has already used
     const user = await this.prismaService.user.findUnique({
       where: {
+        username: userData.username,
         email: userData.email,
         status: 1,
       },

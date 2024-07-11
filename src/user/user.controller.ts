@@ -22,6 +22,7 @@ import {
   CreateUserDto,
   SoftDeleteUserDto,
   UpdateUserDto,
+  UpdateUserPassword,
   UploadAvatarResult,
   UserFilterType,
   UserPaginationResponseType,
@@ -50,6 +51,20 @@ export class UserController {
     console.log('get detail user api =>', Number(user.id));
     return this.userService.getDetail(Number(user.id));
   }
+  @Get('/profile/:username')
+  @Roles('Admin', 'User')
+  getAnotherUserProfile(@Param('username') username: string): Promise<any> {
+    return this.userService.getProfile(username);
+  }
+  @Put('/update-password')
+  @Roles('Admin', 'User')
+  updatePassword(
+    @getUser() user,
+    @Body() body: UpdateUserPassword,
+  ): Promise<User> {
+    const id = Number(user.id);
+    return this.userService.updatePassword(id, body);
+  }
   @Put('/update')
   @Roles('Admin', 'User')
   updateInformation(@getUser() user, @Body() body: UpdateUserDto) {
@@ -61,6 +76,7 @@ export class UserController {
     console.log('get all user api', params);
     return this.userService.getAll(params);
   }
+
   @Get(':id')
   @Roles('Admin')
   getDetail(@Param('id', ParseIntPipe) id: number) {

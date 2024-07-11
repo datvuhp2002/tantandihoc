@@ -7,7 +7,7 @@ export class CreateCategoryDto {
   description: string;
 }
 export interface CategoryFilterType {
-  items_per_page?: number;
+  items_per_page?: string;
   page?: number;
   search?: string;
   nextPage?: number;
@@ -18,6 +18,7 @@ export interface CategoryPaginationResponseType {
   total: number;
   currentPage: number;
   nextPage?: number;
+  lastPage?: number;
   previousPage?: number;
   itemsPerPage?: number;
 }

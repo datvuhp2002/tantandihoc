@@ -34,9 +34,18 @@ import { getUser } from 'src/user/decorator/user.decorator';
 @Controller('posts')
 export class PostController {
   constructor(private postService: PostService) {}
+  @Put('publishPost')
+  @Roles('Admin')
+  publishedPost(@Body() ids: []) {
+    return this.postService.publishPost(ids);
+  }
+  @Put('unPublishPost')
+  @Roles('Admin')
+  unPublishedPost(@Body() ids: []) {
+    return this.postService.unPublishPost(ids);
+  }
   // Create Post
   @Post()
-  @UseGuards(AuthGuard)
   @Roles('Admin', 'User')
   @UseInterceptors(
     FileInterceptor('thumbnail', {
@@ -76,8 +85,16 @@ export class PostController {
       thumbnail: 'post/' + file.filename,
     });
   }
+  @Get('get-all-user-post/:username')
+  @Roles('Admin', 'User')
+  getAllUserPost(
+    @Param('username') username: string,
+    @Query() params: PostFilterType,
+  ): Promise<PostPaginationResponseType> {
+    return this.postService.getAllUserPost(username, params);
+  }
+
   @Get('get-all-my-post')
-  @UseGuards(AuthGuard)
   @Roles('Admin', 'User')
   getAllMyPost(
     @getUser() user: User,
@@ -86,23 +103,21 @@ export class PostController {
     const ownerId = Number(user.id);
     return this.postService.getAllMyPost(ownerId, params);
   }
+
   //Get All
   @Get()
-  @UseGuards(AuthGuard)
   @Roles('Admin', 'User')
   getAll(@Query() params: PostFilterType): Promise<PostPaginationResponseType> {
     return this.postService.getAll(params);
   }
   // Get Detail
   @Get(':id')
-  @UseGuards(AuthGuard)
   @Roles('Admin', 'User')
   getDetail(@Param('id') id: string): Promise<PostModel> {
     return this.postService.getDetail(Number(id));
   }
   // Update Post
   @Put(':id')
-  @UseGuards(AuthGuard)
   @Roles('Admin', 'User')
   @UseInterceptors(
     FileInterceptor('thumbnail', {
@@ -141,7 +156,6 @@ export class PostController {
   }
   //Delete a Post
   @Delete(':id')
-  @UseGuards(AuthGuard)
   @Roles('Admin', 'User')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.postService.delete(id);

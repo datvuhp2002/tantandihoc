@@ -21,7 +21,9 @@ export class CommentPostService {
         message: true,
         createdAt: true,
         reply: true,
-        author: { select: { username: true, avatar: true, id: true } },
+        author: {
+          select: { username: true, fullname: true, avatar: true, id: true },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -41,7 +43,9 @@ export class CommentPostService {
         message: true,
         createdAt: true,
         reply: true,
-        author: { select: { username: true, avatar: true, id: true } },
+        author: {
+          select: { username: true, fullname: true, avatar: true, id: true },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -98,6 +102,8 @@ export class CommentPostService {
         },
         author: {
           select: {
+            username: true,
+            fullname: true,
             email: true,
           },
         },

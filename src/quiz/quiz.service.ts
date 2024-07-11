@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Quiz } from '@prisma/client';
+import { Prisma, Quiz } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import {
   CreateQuizDto,
@@ -11,35 +11,53 @@ import {
 @Injectable()
 export class QuizService {
   constructor(private prismaService: PrismaService) {}
+  async getAllQuizInLesson(lesson_id: number): Promise<any[]> {
+    const quiz = await this.prismaService.quiz.findMany({
+      where: { lesson_id, status: 1 },
+    });
+    return quiz;
+  }
   async getDetail(id: number): Promise<Quiz> {
     return await this.prismaService.quiz.findUnique({
       where: { id, status: 1 },
+      include: {
+        QuizAnswer: true,
+      },
     });
   }
   async getAll(filters: QuizFilterType): Promise<QuizPaginationResponseType> {
+    const lesson_id = Number(filters.lesson_id);
     const items_per_page = Number(filters.items_per_page) || 10;
     const page = Number(filters.page) || 1;
     const search = filters.search || '';
     const skip = page > 1 ? (page - 1) * items_per_page : 0;
+    const where: Prisma.QuizWhereInput = {
+      OR: [
+        {
+          question: {
+            contains: search,
+          },
+        },
+      ],
+      AND: [
+        {
+          status: 1,
+        },
+      ],
+    };
+    if (!Array.isArray(where.AND)) {
+      where.AND = [where.AND];
+    }
+    if (lesson_id)
+      where.AND.push({
+        lesson_id: lesson_id,
+      });
     const quizs = await this.prismaService.quiz.findMany({
       take: items_per_page,
       skip,
-      where: {
-        OR: [
-          {
-            answer: {
-              contains: search,
-            },
-          },
-        ],
-        AND: [
-          {
-            status: 1,
-          },
-        ],
-      },
+      where,
       include: {
-        onwership_Lesson: {
+        ownership_Lesson: {
           select: {
             title: true,
           },
@@ -53,7 +71,7 @@ export class QuizService {
       where: {
         OR: [
           {
-            answer: {
+            question: {
               contains: search,
             },
           },
@@ -85,6 +103,10 @@ export class QuizService {
   async delete(id: number) {
     await this.prismaService.quiz.update({
       where: { id },
+      data: { status: 0, deletedAt: new Date() },
+    });
+    await this.prismaService.quizAnswer.updateMany({
+      where: { quiz_id: id },
       data: { status: 0, deletedAt: new Date() },
     });
   }

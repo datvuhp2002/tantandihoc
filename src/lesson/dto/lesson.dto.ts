@@ -23,6 +23,7 @@ export interface LessonPaginationResponseType {
   data: any[];
   total: number;
   currentPage: number;
+  lastPage: number;
   nextPage?: number;
   previousPage?: number;
   itemsPerPage?: number;
@@ -30,6 +31,6 @@ export interface LessonPaginationResponseType {
 export class UpdateLessonDto {
   title: string;
   content: string;
-  thumbnail: string;
-  level: number;
+  videoFile?: string;
+  videoUrl?: string;
 }

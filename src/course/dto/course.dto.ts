@@ -1,14 +1,23 @@
 import { Course } from '@prisma/client';
-import { IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class createCourseDto {
   @IsNotEmpty()
   name: string;
   thumbnail: string;
+  @IsNotEmpty()
   description: string;
+  @IsNotEmpty()
+  price: number;
+  categoryId: number;
+  @IsOptional()
+  discount_id?: number;
 }
 export interface CourseFilterType {
-  items_per_page?: number;
+  discount?: number;
+  category?: number;
+  isFree?: string;
+  items_per_page?: string;
   page?: number;
   search?: string;
   nextPage?: number;

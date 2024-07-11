@@ -1,4 +1,3 @@
-import { CloudinaryService } from './../cloudinary/cloudinary.service';
 import {
   BadRequestException,
   Body,
@@ -29,10 +28,7 @@ import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Controller('lessons')
 export class LessonController {
-  constructor(
-    private lessonService: LessonService,
-    private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  constructor(private lessonService: LessonService) {}
   @Get('all-lesson')
   @Roles('Admin', 'User')
   getAllLesson(
@@ -54,6 +50,21 @@ export class LessonController {
   }
   @Put(':id')
   @Roles('Admin')
+  @UseInterceptors(
+    FileInterceptor('videoFile', {
+      storage: storageConfig('lesson'),
+      fileFilter: (req, file, cb) => {
+        const ext = extname(file.originalname);
+        const allowedExtArr = ['.mov', '.mp4'];
+        if (!allowedExtArr.includes(ext)) {
+          req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
+          return cb(new BadRequestException(req.fileValidationError), false);
+        } else {
+          cb(null, true);
+        }
+      },
+    }),
+  )
   update(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: any,
@@ -64,7 +75,7 @@ export class LessonController {
       throw new BadRequestException(req.fileValidationError);
     }
     if (file) {
-      data.thumbnail = 'lesson/' + file.filename;
+      data.videoFile = 'lesson/' + file.filename;
     }
     return this.lessonService.update(id, data);
   }
@@ -92,6 +103,7 @@ export class LessonController {
     if (!file) {
       throw new BadRequestException('File is required');
     }
+    console.log(data);
     return this.lessonService.create({
       ...data,
       videoFile: 'lesson/' + file.filename,

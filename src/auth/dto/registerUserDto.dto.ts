@@ -6,8 +6,10 @@ export class RegisterUserDto {
   @IsEmail()
   email: string;
   @IsNotEmpty()
-  @MinLength(6)
+  @MinLength(6, { message: 'Mật khẩu phải từ 6 ký tự trở lên!' })
   password: string;
+  @IsNotEmpty()
+  fullname: string;
   @IsOptional()
   avatar?: string;
   status: number;

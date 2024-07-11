@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   isNotEmpty,
   IsOptional,
+  minLength,
   MinLength,
 } from 'class-validator';
 
@@ -14,8 +15,9 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
   @IsNotEmpty()
-  @MinLength(6)
+  @MinLength(6, { message: 'Mật khẩu phải từ 6 ký tự trở lên!' })
   password: string;
+  fullname: string;
   role?: string;
   status: number;
 }
@@ -35,8 +37,15 @@ export interface UserPaginationResponseType {
   previousPage?: number;
   itemsPerPage?: number;
 }
+export class UpdateUserPassword {
+  @MinLength(6, { message: 'Mật khẩu phải từ 6 ký tự trở lên!' })
+  oldPassword: string;
+  @MinLength(6, { message: 'Mật khẩu phải từ 6 ký tự trở lên!' })
+  newPassword: String;
+}
 export class UpdateUserDto {
-  username: string;
+  username?: string;
+  fullname?: string;
   avatar?: string;
   status: number;
 }

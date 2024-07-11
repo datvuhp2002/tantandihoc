@@ -56,6 +56,18 @@ export class UserProgressService {
       HttpStatus.NOT_FOUND,
     );
   }
+  async isDoneQuiz(
+    author_id: number,
+    id: number,
+    lesson_id: number,
+    quiz_id: number,
+  ): Promise<Boolean> {
+    const isUserProgress = await this.prismaService.userProgress.findFirst({
+      where: { author_id, course_id: id, lesson_id, quiz_id },
+    });
+    if (isUserProgress) return true;
+    return false;
+  }
   async checkIsLearned(
     author_id: number,
     id: number,
@@ -166,12 +178,24 @@ export class UserProgressService {
       itemsPerPage: items_per_page,
     };
   }
-  async update(id: number, data: UpdateUserProgressDto) {
-    console.log(data);
+  async update(
+    author_id: number,
+    course_id: number,
+    lesson_id: number,
+    data: UpdateUserProgressDto,
+  ) {
     try {
+      const userProgress = await this.prismaService.userProgress.findFirst({
+        where: { author_id, course_id, lesson_id },
+      });
+      if (!userProgress)
+        throw new HttpException('UserProgress not found', HttpStatus.NOT_FOUND);
       return await this.prismaService.userProgress.update({
-        where: { id, status: 1 },
-        data,
+        where: { id: userProgress.id },
+        data: {
+          ...data,
+          updatedAt: new Date(),
+        },
       });
     } catch (err) {
       throw new HttpException(

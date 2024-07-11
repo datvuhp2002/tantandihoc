@@ -67,6 +67,16 @@ export class UserProgressController {
       course_id,
     );
   }
+  @Get('isDoneQuiz/:id')
+  @Roles('Admin', 'User')
+  isDoneQuiz(
+    @getUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Query('lesson_id', ParseIntPipe) lesson_id: number,
+    @Query('quiz_id', ParseIntPipe) quiz_id: number,
+  ): Promise<Boolean> {
+    return this.userProgressService.isDoneQuiz(user.id, id, lesson_id, quiz_id);
+  }
   @Get('checkIsLearned/:id')
   @Roles('Admin', 'User')
   checkUserProgressByCourseIdLessonId(
@@ -91,13 +101,22 @@ export class UserProgressController {
   ): Promise<UserProgressPaginationResponseType> {
     return this.userProgressService.getAll(data);
   }
+
   @Put(':id')
   @Roles('Admin', 'User')
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @getUser() user: User,
+    @Param('id', ParseIntPipe) course_id: number,
+    @Query('lesson_id', ParseIntPipe) lesson_id: number,
     @Body() data: UpdateUserProgressDto,
   ): Promise<UserProgress> {
-    return this.userProgressService.update(id, data);
+    const author_id = Number(user.id);
+    return this.userProgressService.update(
+      author_id,
+      course_id,
+      lesson_id,
+      data,
+    );
   }
   @Delete(':id')
   @Roles('Admin', 'User')

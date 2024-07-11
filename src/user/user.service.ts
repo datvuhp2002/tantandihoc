@@ -10,12 +10,13 @@ import {
   CreateUserDto,
   SoftDeleteUserDto,
   UpdateUserDto,
+  UpdateUserPassword,
   UploadAvatarResult,
   UserFilterType,
   UserPaginationResponseType,
   softMultipleDeleteUserDto,
 } from './dto/user.dto';
-import { hash } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
@@ -34,7 +35,7 @@ export class UserService {
       );
     }
     // step 2: hash password and store to db
-    const hashPassword = await hash(body.password, 10);
+    const hashPassword = await bcrypt.hash(body.password, 10);
     console.log(body);
     const result = await this.prismaService.user.create({
       data: { ...body, password: hashPassword },
@@ -120,6 +121,25 @@ export class UserService {
         status: 1,
       },
       select: {
+        id: true,
+        fullname: true,
+        username: true,
+        email: true,
+        roles: true,
+        avatar: true,
+        createdAt: true,
+      },
+    });
+  }
+  async getProfile(username: string) {
+    return await this.prismaService.user.findUnique({
+      where: {
+        username,
+        status: 1,
+      },
+      select: {
+        id: true,
+        fullname: true,
         username: true,
         email: true,
         avatar: true,
@@ -127,8 +147,35 @@ export class UserService {
       },
     });
   }
-  async update(id: number, data: UpdateUserDto): Promise<User> {
-    return await this.prismaService.user.update({
+  async updatePassword(id: number, data: UpdateUserPassword): Promise<User> {
+    const user = await this.prismaService.user.findUnique({ where: { id } });
+    const verify = await bcrypt.compareSync(data.oldPassword, user.password);
+    if (!verify)
+      throw new HttpException(
+        'Mật khẩu cũ không đúng!',
+        HttpStatus.BAD_REQUEST,
+      );
+    else {
+      const hashPassword = await bcrypt.hash(data.newPassword, 10);
+      return await this.prismaService.user.update({
+        where: { id },
+        data: { password: hashPassword },
+      });
+    }
+  }
+  async update(id: number, data: UpdateUserDto): Promise<any> {
+    if (data.username) {
+      const user = await this.prismaService.user.findUnique({
+        where: { username: data.username },
+      });
+      if (user && user.id !== id) {
+        throw new HttpException(
+          'Tên người dùng đã tồn tại, vui lòng chọn một tên người dùng khác!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+    await this.prismaService.user.update({
       where: { id },
       data,
     });

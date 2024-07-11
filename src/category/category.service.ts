@@ -29,9 +29,35 @@ export class CategoryService {
   async getAll(
     filters: CategoryFilterType,
   ): Promise<CategoryPaginationResponseType> {
-    const items_per_page = Number(filters.items_per_page) || 10;
-    const page = Number(filters.page) || 1;
+    let items_per_page;
     const search = filters.search || '';
+    const total = await this.prismaService.category.count({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: search,
+            },
+          },
+          {
+            description: {
+              contains: search,
+            },
+          },
+        ],
+        AND: [
+          {
+            status: 1,
+          },
+        ],
+      },
+    });
+    if (filters.items_per_page === 'All') {
+      items_per_page = total;
+    } else {
+      items_per_page = Number(filters.items_per_page) || 10;
+    }
+    const page = Number(filters.page) || 1;
     const skip = page > 1 ? (page - 1) * items_per_page : 0;
     const categories = await this.prismaService.category.findMany({
       take: items_per_page,
@@ -59,27 +85,7 @@ export class CategoryService {
         createdAt: 'desc',
       },
     });
-    const total = await this.prismaService.category.count({
-      where: {
-        OR: [
-          {
-            name: {
-              contains: search,
-            },
-          },
-          {
-            description: {
-              contains: search,
-            },
-          },
-        ],
-        AND: [
-          {
-            status: 1,
-          },
-        ],
-      },
-    });
+
     const lastPage = Math.ceil(total / items_per_page);
     const nextPage = page + 1 > lastPage ? null : page + 1;
     const previousPage = page - 1 < 1 ? null : page - 1;
@@ -88,6 +94,7 @@ export class CategoryService {
       total,
       nextPage,
       previousPage,
+      lastPage,
       currentPage: page,
       itemsPerPage: items_per_page,
     };

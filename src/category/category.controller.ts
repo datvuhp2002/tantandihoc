@@ -27,7 +27,7 @@ export class CategoryController {
     return this.categoryService.create(data);
   }
   @Get()
-  @Roles('Admin')
+  @Roles('Admin', 'User')
   getAll(
     @Query() filters: CategoryFilterType,
   ): Promise<CategoryPaginationResponseType> {
@@ -48,7 +48,7 @@ export class CategoryController {
   }
   @Delete(':id')
   @Roles('Admin')
-  delete(@Param('id') id: number) {
+  delete(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.delete(id);
   }
 }

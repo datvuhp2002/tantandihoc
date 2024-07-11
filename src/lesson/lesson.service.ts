@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Lesson } from '@prisma/client';
+import { Lesson, Course } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import {
   CreateLessonDto,
@@ -15,17 +15,22 @@ export class LessonService {
     filters: LessonFilterType,
   ): Promise<LessonPaginationResponseType> {
     const getAll = filters.get_all;
-    const course_id = Number(filters.course_id);
+    const course_id = filters.course_id ? Number(filters.course_id) : undefined;
     const search = filters.search || '';
     const items_per_page =
-      getAll === 'All' ? undefined : filters.items_per_page || 10;
+      getAll === 'All' ? undefined : Number(filters.items_per_page) || 10;
     const page = filters.page || 1;
 
     // Common conditions for both count and findMany
-    const whereCondition = {
+    const whereCondition: any = {
       OR: [{ title: { contains: search } }, { content: { contains: search } }],
-      AND: [{ status: 1, course_id }],
+      AND: [{ status: 1 }],
     };
+
+    // If course_id is provided, add it to the AND conditions
+    if (course_id) {
+      whereCondition.AND.push({ course_id });
+    }
 
     const total = await this.prismaService.lesson.count({
       where: whereCondition,
@@ -42,11 +47,14 @@ export class LessonService {
       skip,
       where: whereCondition,
       include: {
-        Quiz: {
-          select: { answer: true },
+        ownership_course: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
-        CommentLesson: {
-          select: { author: true, message: true },
+        Quiz: {
+          select: { question: true },
         },
       },
       orderBy: {
@@ -62,11 +70,13 @@ export class LessonService {
       data: lessons,
       total,
       nextPage,
+      lastPage,
       previousPage,
       currentPage: page,
       itemsPerPage: items_per_page || total,
     };
   }
+
   async getAllLesson(filters: LessonFilterType): Promise<any> {
     const course_id = Number(filters.course_id);
     const whereCondition = {
@@ -114,6 +124,9 @@ export class LessonService {
     });
   }
   async update(id: number, data: UpdateLessonDto): Promise<Lesson> {
-    return this.prismaService.lesson.update({ where: { id }, data });
+    return this.prismaService.lesson.update({
+      where: { id },
+      data: { ...data },
+    });
   }
 }

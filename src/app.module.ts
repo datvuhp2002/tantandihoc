@@ -23,7 +23,10 @@ import { CommentPostModule } from './comment-post/comment-post.module';
 import { SavedPostModule } from './saved-post/saved-post.module';
 import { RolesGuard } from './auth/roles.guard';
 import { CourseReceivedModule } from './course-received/course-received.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { QuizAnswerModule } from './quiz-answer/quiz-answer.module';
+import { PayosModule } from './payos/payos.module';
+import { TransactionModule } from './transaction/transaction.module';
+import { DiscountModule } from './discount/discount.module';
 
 @Module({
   imports: [
@@ -40,7 +43,10 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     CommentPostModule,
     SavedPostModule,
     CourseReceivedModule,
-    CloudinaryModule,
+    QuizAnswerModule,
+    PayosModule,
+    TransactionModule,
+    DiscountModule,
   ],
   controllers: [AppController],
   providers: [

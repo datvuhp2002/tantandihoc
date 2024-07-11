@@ -14,6 +14,7 @@ export class CreatePostDto {
 export interface PostFilterType {
   items_per_page?: number;
   page?: number;
+  isPublished?: string;
   search?: string;
   nextPage?: number;
   previousPage?: number;

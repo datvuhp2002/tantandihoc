@@ -23,9 +23,6 @@ export interface UserProgressPaginationResponseType {
   itemsPerPage?: number;
 }
 export class UpdateUserProgressDto {
-  course_id?: number;
-  lesson_id?: number;
-  courseProcess?: string;
   quiz_id?: number;
   score?: number;
 }

@@ -18,10 +18,41 @@ model Course {
   description  String @db.LongText
   updatedAt    DateTime?      @updatedAt
   deletedAt    DateTime?
+  price        Int 
   status       Int            @default(1)
-  Lesson       Lesson[]
-  UserProgress UserProgress[]
+  category     Category?      @relation(fields: [categoryId], references: [id])
+  categoryId   Int?
+  ownership_discount Discount?          @relation(fields: [discount_id], references: [id])
+  discount_id    Int?
+  Lesson         Lesson[]
+  UserProgress   UserProgress[]
+  Transaction    Transaction[]
   CourseReceived CourseReceived[]
+}
+model Transaction {
+  id         Int      @id @default(autoincrement())
+  name    String
+  status       Int            @default(0)
+  amount        Int?
+  ownership_user            User      @relation(fields: [user_id], references: [id])
+  user_id         Int
+  course_id    Int
+  Course       Course   @relation(fields: [course_id], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime?      @updatedAt
+}
+model Discount {
+  id           Int            @id @default(autoincrement())
+  name         String
+  type         String @default("percentage")
+  value        Int
+  start_date   DateTime
+  end_date     DateTime
+  status       Int            @default(1)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime?      @updatedAt
+  deletedAt    DateTime?
+  Course       Course[]
 }
 model CourseReceived {
   id         Int      @id @default(autoincrement())
@@ -37,7 +68,7 @@ model CourseReceived {
 model Lesson {
   id               Int             @id @default(autoincrement())
   title            String
-  content          String          @db.LongText
+  content          String?          @db.LongText
   createdAt        DateTime        @default(now())
   updatedAt        DateTime?       @updatedAt
   ownership_course Course          @relation(fields: [course_id], references: [id])
@@ -54,20 +85,33 @@ model Lesson {
 // done
 model Quiz {
   id               Int            @id @default(autoincrement())
-  onwership_Lesson Lesson         @relation(fields: [lesson_id], references: [id])
+  title            String
+  ownership_Lesson Lesson         @relation(fields: [lesson_id], references: [id])
   lesson_id        Int
-  answer           String
+  question         String
   status           Int            @default(1)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime?      @updatedAt
   deletedAt        DateTime?
   UserProgress     UserProgress[]
+  QuizAnswer       QuizAnswer[]
 }
-
+model QuizAnswer{
+  id               Int            @id @default(autoincrement())
+  ownership_quiz   Quiz           @relation(fields: [quiz_id], references:[id])
+  correct          Boolean        @default(false)
+  quiz_id          Int
+  answer           String
+  status           Int            @default(1)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime?      @updatedAt
+  deletedAt        DateTime?
+}
 // done
 model User {
   id             Int              @id @default(autoincrement())
-  username       String
+  fullname       String
+  username       String @unique
   email          String           @unique
   password       String
   avatar         String?
@@ -77,6 +121,7 @@ model User {
   updatedAt      DateTime?        @updatedAt
   deletedAt      DateTime?
   roles          String           @default("User")
+  Transaction Transaction[]
   posts          Post[]
   UserProgress   UserProgress[]
   Comment        CommentPost[]
@@ -93,7 +138,7 @@ model UserProgress {
   course_id         Int?
   ownership_lesson  Lesson?   @relation(fields: [lesson_id], references: [id])
   lesson_id         Int?
-  onwership_quiz    Quiz?     @relation(fields: [quiz_id], references: [id])
+  ownership_quiz    Quiz?     @relation(fields: [quiz_id], references: [id])
   quiz_id           Int?
   score             Int?
   status            Int       @default(1)
@@ -127,6 +172,7 @@ model Post {
   status     Int           @default(1)
   owner      User          @relation(fields: [ownerId], references: [id])
   ownerId    Int
+  isPublished Int          @default(0)
   category   Category      @relation(fields: [categoryId], references: [id])
   categoryId Int
   createdAt  DateTime      @default(now())
@@ -140,12 +186,13 @@ model Post {
 model Category {
   id          Int          @id @default(autoincrement())
   name        String
-  description String
+  description String  @db.LongText
   status      Int          @default(1)
   deletedAt   DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?    @updatedAt
   Post        Post[]
+  Course      Course[]
 }
 
 // done
