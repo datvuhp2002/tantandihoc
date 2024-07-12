@@ -43,9 +43,35 @@ export class UserService {
     return result;
   }
   async getAll(filters: UserFilterType): Promise<UserPaginationResponseType> {
-    const items_per_page = Number(filters.items_per_page) || 10;
+    let items_per_page;
     const page = Number(filters.page) || 1;
     const search = filters.search || '';
+    const total = await this.prismaService.user.count({
+      where: {
+        OR: [
+          {
+            username: {
+              contains: search,
+            },
+          },
+          {
+            email: {
+              contains: search,
+            },
+          },
+        ],
+        AND: [
+          {
+            status: 1,
+          },
+        ],
+      },
+    });
+    if (filters.items_per_page !== 'all') {
+      items_per_page = Number(filters.items_per_page) || 10;
+    } else {
+      items_per_page = total;
+    }
     const skip = page > 1 ? (page - 1) * items_per_page : 0;
     const users = await this.prismaService.user.findMany({
       take: items_per_page,
@@ -80,27 +106,7 @@ export class UserService {
         createdAt: 'desc',
       },
     });
-    const total = await this.prismaService.user.count({
-      where: {
-        OR: [
-          {
-            username: {
-              contains: search,
-            },
-          },
-          {
-            email: {
-              contains: search,
-            },
-          },
-        ],
-        AND: [
-          {
-            status: 1,
-          },
-        ],
-      },
-    });
+
     const lastPage = Math.ceil(total / items_per_page);
     const nextPage = page + 1 > lastPage ? null : page + 1;
     const previousPage = page - 1 < 1 ? null : page - 1;

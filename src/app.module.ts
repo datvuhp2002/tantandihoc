@@ -27,6 +27,7 @@ import { QuizAnswerModule } from './quiz-answer/quiz-answer.module';
 import { PayosModule } from './payos/payos.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { DiscountModule } from './discount/discount.module';
+import { StatisticModule } from './statistic/statistic.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { DiscountModule } from './discount/discount.module';
     PayosModule,
     TransactionModule,
     DiscountModule,
+    StatisticModule,
   ],
   controllers: [AppController],
   providers: [

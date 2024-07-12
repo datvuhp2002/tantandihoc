@@ -11,7 +11,8 @@ export class CreateTransactionDto {
 }
 
 export interface TransactionFilterType {
-  items_per_page?: number;
+  status?: number;
+  items_per_page?: string;
   page?: number;
   search?: string;
   nextPage?: number;
@@ -21,7 +22,7 @@ export interface TransactionPaginationResponseType {
   data: Transaction[];
   total: number;
   currentPage: number;
-  finalPage: number;
+  lastPage: number;
   nextPage?: number;
   previousPage?: number;
   itemsPerPage?: number;

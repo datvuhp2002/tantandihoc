@@ -12,7 +12,7 @@ export class CreatePostDto {
   categoryId: number;
 }
 export interface PostFilterType {
-  items_per_page?: number;
+  items_per_page?: string;
   page?: number;
   isPublished?: string;
   search?: string;

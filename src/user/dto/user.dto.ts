@@ -22,7 +22,7 @@ export class CreateUserDto {
   status: number;
 }
 export interface UserFilterType {
-  items_per_page?: number;
+  items_per_page?: string;
   page?: number;
   search?: string;
   nextPage?: number;

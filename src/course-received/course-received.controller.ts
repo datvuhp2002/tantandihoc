@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { CourseReceivedService } from './course-received.service';
@@ -14,10 +15,24 @@ import {
   CourseReceivedFilterType,
   CourseReceivedPaginationResponseType,
   createCourseReceivedDto,
+  updateCourseReceivedDto,
 } from './dto/course-received.dto';
 @Controller('course-received')
 export class CourseReceivedController {
   constructor(private courseReceivedService: CourseReceivedService) {}
+  @Put(':id')
+  @Roles('Admin')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: updateCourseReceivedDto,
+  ): Promise<CourseReceived> {
+    return this.courseReceivedService.update(id, data);
+  }
+  @Get('detail/:id')
+  @Roles('Admin', 'User')
+  detail(@Param('id', ParseIntPipe) id: number): Promise<CourseReceived> {
+    return this.courseReceivedService.detail(id);
+  }
   @Post()
   @Roles('Admin')
   create(@Body() data: createCourseReceivedDto): Promise<CourseReceived> {

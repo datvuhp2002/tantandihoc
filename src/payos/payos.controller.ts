@@ -31,9 +31,7 @@ export class PayosController {
   @SetMetadata('isPublic', true)
   @Post('receive-hook')
   receiveHook(@Body() body: any, @Req() req: Request) {
-    // Use Request from express
-
-    console.log(req.body); // Ensure body is logged correctly
+    console.log(req.body);
     return req.body;
   }
 }

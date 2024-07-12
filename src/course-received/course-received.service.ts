@@ -6,11 +6,26 @@ import {
   CourseReceivedFilterType,
   CourseReceivedPaginationResponseType,
   createCourseReceivedDto,
+  updateCourseReceivedDto,
 } from './dto/course-received.dto';
 
 @Injectable()
 export class CourseReceivedService {
   constructor(private prismaService: PrismaService) {}
+  async update(
+    id: number,
+    data: updateCourseReceivedDto,
+  ): Promise<CourseReceived> {
+    await this.prismaService.courseReceived.update({ where: { id }, data });
+    return await this.prismaService.courseReceived.findUnique({
+      where: { id },
+    });
+  }
+  async detail(id: number): Promise<CourseReceived> {
+    return await this.prismaService.courseReceived.findUnique({
+      where: { id },
+    });
+  }
   async create(data: createCourseReceivedDto): Promise<CourseReceived> {
     return await this.prismaService.courseReceived.create({
       data: { course_id: Number(data.course_id), ...data },

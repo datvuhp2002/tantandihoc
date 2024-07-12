@@ -158,7 +158,7 @@ export class PostController {
   @Delete(':id')
   @Roles('Admin', 'User')
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.postService.delete(id);
+    return this.postService.deleteOne(id);
   }
   @Post('cke-upload')
   @UseGuards(AuthGuard)

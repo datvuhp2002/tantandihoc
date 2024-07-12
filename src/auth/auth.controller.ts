@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Post,
+  Put,
   SetMetadata,
   UsePipes,
   ValidationPipe,
@@ -29,5 +30,22 @@ export class AuthController {
   @SetMetadata('isPublic', true)
   refreshToken(@Body() { refresh_token }): Promise<any> {
     return this.authService.refreshToken(refresh_token);
+  }
+
+  @Post('send-token')
+  @SetMetadata('isPublic', true)
+  async sendEmailToken(@Body('email') email: string) {
+    return this.authService.sendEmailToken(email);
+  }
+
+  @Post('verify-token')
+  @SetMetadata('isPublic', true)
+  async verifyToken(@Body() data) {
+    return this.authService.verifyToken(data.token);
+  }
+  @Put('change-password')
+  @SetMetadata('isPublic', true)
+  async changePassword(@Body() data) {
+    return this.authService.changePassword(data);
   }
 }

@@ -7,6 +7,9 @@ export class createCourseReceivedDto {
   name: string;
   course_id: number;
 }
+export class updateCourseReceivedDto {
+  name: string;
+}
 export interface CourseReceivedFilterType {
   items_per_page?: number;
   get_all?: string;
