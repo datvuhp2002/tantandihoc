@@ -90,9 +90,14 @@ export class AuthService {
   };
   async sendEmailToken(email: string): Promise<any> {
     if (!email) {
-      throw new BadRequestException('Email is required');
+      throw new BadRequestException('Email là bắt buộc');
     }
-
+    const findEmail = await this.prismaService.user.findUnique({
+      where: { email },
+    });
+    if (!findEmail) {
+      throw new BadRequestException('Email không tồn tại');
+    }
     // 1. Create new token or OTP (assuming you have a separate OTP service or function)
     const token = await this.newOtp(email);
 

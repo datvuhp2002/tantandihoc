@@ -51,6 +51,11 @@ export class DiscountService {
     if (endDate < startDate) {
       throw new BadRequestException('Ngày kết thúc không hợp lệ');
     }
+    if (startDate.getTime() === endDate.getTime()) {
+      throw new BadRequestException(
+        'Thời gian bắt đầu và thời gian kết thúc không thể trùng nhau',
+      );
+    }
 
     return await this.prismaService.discount.create({ data });
   }

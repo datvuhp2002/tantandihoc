@@ -1,3 +1,4 @@
+import { last } from 'rxjs';
 import { CommentPost } from '@prisma/client';
 import { IsNotEmpty } from 'class-validator';
 export class CreateCommentPostDto {
@@ -10,6 +11,7 @@ export class CreateCommentPostDto {
 export interface CommentPostFilterType {
   items_per_page?: number;
   page?: number;
+
   search?: string;
   nextPage?: number;
   previousPage?: number;
@@ -19,6 +21,7 @@ export interface CommentPostPaginationResponseType {
   total: number;
   currentPage: number;
   nextPage?: number;
+  lastPage?: number;
   previousPage?: number;
   itemsPerPage?: number;
 }

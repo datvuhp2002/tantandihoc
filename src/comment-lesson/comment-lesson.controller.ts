@@ -43,12 +43,13 @@ export class CommentLessonController {
   ): Promise<any> {
     return this.commentLessonService.getAllCommentsInLessons(lesson_id);
   }
-  @Get()
-  @Roles('Admin', 'User')
+  @Get('get-all-lessons-comment/:id')
+  @Roles('Admin')
   getAll(
+    @Param('id', ParseIntPipe) lesson_id: number,
     @Query() filters: CommentLessonFilterType,
   ): Promise<CommentLessonPaginationResponseType> {
-    return this.commentLessonService.getAll(filters);
+    return this.commentLessonService.getAll(lesson_id, filters);
   }
   @Put(':id')
   @Roles('Admin', 'User')
@@ -69,6 +70,11 @@ export class CommentLessonController {
       data.reply = Number(data.reply);
     }
     return this.commentLessonService.create({ ...data, author_id });
+  }
+  @Delete('/multiple-delete')
+  @Roles('Admin')
+  multipleDelete(@Body() ids) {
+    return this.commentLessonService.multipleDelete(ids);
   }
   @Delete(':id')
   @Roles('Admin', 'User')

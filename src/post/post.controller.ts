@@ -34,6 +34,42 @@ import { getUser } from 'src/user/decorator/user.decorator';
 @Controller('posts')
 export class PostController {
   constructor(private postService: PostService) {}
+  @Delete('multiple-soft-delete')
+  @Roles('Admin')
+  multipleSoftDelete(@Body() ids) {
+    return this.postService.multipleSoftDelete(ids);
+  }
+  @Delete('multiple-force-delete')
+  @Roles('Admin')
+  multipleForceDelete(@Body() ids) {
+    return this.postService.multipleForceDelete(ids);
+  }
+  @Delete('force-delete/:id')
+  @Roles('Admin', 'User')
+  forceDelete(@Param('id', ParseIntPipe) id: number) {
+    return this.postService.forceDelete(id);
+  }
+  @Delete(':id')
+  @Roles('Admin', 'User')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.postService.deleteOne(id);
+  }
+  @Put('multiple-restore')
+  @Roles('Admin')
+  multipleRestore(@Body() ids) {
+    return this.postService.multipleRestore(ids);
+  }
+  @Put('/restore/:id')
+  @Roles('Admin')
+  restore(@Param('id', ParseIntPipe) id: number) {
+    return this.postService.restore(id);
+  }
+
+  @Get('trash')
+  @Roles('Admin')
+  trash(@Query() params: PostFilterType): Promise<PostPaginationResponseType> {
+    return this.postService.trash(params);
+  }
   @Put('publishPost')
   @Roles('Admin')
   publishedPost(@Body() ids: []) {
@@ -104,7 +140,6 @@ export class PostController {
     return this.postService.getAllMyPost(ownerId, params);
   }
 
-  //Get All
   @Get()
   @Roles('Admin', 'User')
   getAll(@Query() params: PostFilterType): Promise<PostPaginationResponseType> {
@@ -154,12 +189,7 @@ export class PostController {
     }
     return this.postService.update(Number(id), data);
   }
-  //Delete a Post
-  @Delete(':id')
-  @Roles('Admin', 'User')
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.postService.deleteOne(id);
-  }
+
   @Post('cke-upload')
   @UseGuards(AuthGuard)
   @UseInterceptors(

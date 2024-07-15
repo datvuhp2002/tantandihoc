@@ -39,16 +39,48 @@ import { getUser } from './decorator/user.decorator';
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
+  @Put('multiple-restore')
+  @Roles('Admin')
+  multipleRestore(@Body() ids: number[]) {
+    return this.userService.multipleRestore(ids);
+  }
+  @Delete('multiple-force-delete')
+  @Roles('Admin')
+  multipleForceDelete(@Body() ids: number[]) {
+    return this.userService.multipleForceDelete(ids);
+  }
+  @Put('/restore/:id')
+  @Roles('Admin')
+  restoreUser(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.restoreUser(id);
+  }
+  @Delete('soft-delete-multiple')
+  @Roles('Admin')
+  softDeleteMultiple(@Body() ids: number[]) {
+    return this.userService.softDeleteMultiple(ids);
+  }
+  @Delete('force-delete/:id')
+  @Roles('Admin')
+  forceDelete(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SoftDeleteUserDto> {
+    return this.userService.forceDelete(id);
+  }
+  @Delete(':id')
+  @Roles('Admin')
+  deleteById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SoftDeleteUserDto> {
+    return this.userService.deleteById(id);
+  }
   @Post()
   @Roles('Admin')
   create(@Body() body: CreateUserDto): Promise<User> {
-    console.log('create user api', body);
     return this.userService.create(body);
   }
   @Get('/profile')
   @Roles('Admin', 'User')
   getProfile(@getUser() user) {
-    console.log('get detail user api =>', Number(user.id));
     return this.userService.getDetail(Number(user.id));
   }
   @Get('/profile/:username')
@@ -70,17 +102,20 @@ export class UserController {
   updateInformation(@getUser() user, @Body() body: UpdateUserDto) {
     return this.userService.update(Number(user.id), body);
   }
+  @Get('trash')
+  @Roles('Admin')
+  trash(@Query() params: UserFilterType): Promise<UserPaginationResponseType> {
+    return this.userService.trash(params);
+  }
   @Get()
   @Roles('Admin')
   getAll(@Query() params: UserFilterType): Promise<UserPaginationResponseType> {
-    console.log('get all user api', params);
     return this.userService.getAll(params);
   }
 
   @Get(':id')
   @Roles('Admin')
   getDetail(@Param('id', ParseIntPipe) id: number) {
-    console.log('get detail user api =>', id);
     return this.userService.getDetail(id);
   }
 
@@ -90,25 +125,9 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateUserDto,
   ): Promise<User> {
-    console.log('update user api =>', id);
     return this.userService.update(id, body);
   }
-  @Delete(':id')
-  @Roles('Admin')
-  deleteById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<SoftDeleteUserDto> {
-    console.log('delete user => ', id);
-    return this.userService.deleteById(id);
-  }
-  @Delete('multiple')
-  @Roles('Admin')
-  multipleDelete(
-    @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
-    ids: String[],
-  ) {
-    return this.userService.multipleDelete(ids);
-  }
+
   @Post('upload-avatar')
   @Roles('Admin', 'User')
   @UseInterceptors(

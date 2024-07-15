@@ -77,6 +77,72 @@ export class LessonService {
     };
   }
 
+  async trash(
+    filters: LessonFilterType,
+  ): Promise<LessonPaginationResponseType> {
+    const getAll = filters.get_all;
+    const course_id = filters.course_id ? Number(filters.course_id) : undefined;
+    const search = filters.search || '';
+    const items_per_page =
+      getAll === 'All' ? undefined : Number(filters.items_per_page) || 10;
+    const page = filters.page || 1;
+
+    // Common conditions for both count and findMany
+    const whereCondition: any = {
+      OR: [{ title: { contains: search } }, { content: { contains: search } }],
+      AND: [{ status: 0 }],
+    };
+
+    // If course_id is provided, add it to the AND conditions
+    if (course_id) {
+      whereCondition.AND.push({ course_id });
+    }
+
+    const total = await this.prismaService.lesson.count({
+      where: whereCondition,
+    });
+
+    const skip = items_per_page
+      ? page > 1
+        ? (page - 1) * items_per_page
+        : 0
+      : 0;
+
+    const lessons = await this.prismaService.lesson.findMany({
+      take: items_per_page,
+      skip,
+      where: whereCondition,
+      include: {
+        ownership_course: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Quiz: {
+          select: { question: true },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const lastPage = items_per_page ? Math.ceil(total / items_per_page) : 1;
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const previousPage = page - 1 < 1 ? null : page - 1;
+
+    return {
+      data: lessons,
+      total,
+      nextPage,
+      lastPage,
+      previousPage,
+      currentPage: page,
+      itemsPerPage: items_per_page || total,
+    };
+  }
+
   async getAllLesson(filters: LessonFilterType): Promise<any> {
     const course_id = Number(filters.course_id);
     const whereCondition = {
@@ -114,12 +180,49 @@ export class LessonService {
       throw new HttpException('can not create lesson', HttpStatus.BAD_REQUEST);
     }
   }
+  async multipleRestore(ids: number[]) {
+    return await this.prismaService.lesson.updateMany({
+      where: { id: { in: ids }, status: 0 },
+      data: {
+        status: 1,
+        deletedAt: null,
+      },
+    });
+  }
+  async multipleSoftDelete(ids: number[]) {
+    return await this.prismaService.lesson.updateMany({
+      where: { id: { in: ids }, status: 1 },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
+    });
+  }
+  async multipleForceDelete(ids: number[]) {
+    return await this.prismaService.lesson.deleteMany({
+      where: { id: { in: ids } },
+    });
+  }
   async delete(id: number) {
     return await this.prismaService.lesson.update({
       where: { id },
       data: {
         status: 0,
         deletedAt: new Date(),
+      },
+    });
+  }
+  async forceDelete(id: number) {
+    return await this.prismaService.lesson.delete({
+      where: { id },
+    });
+  }
+  async restore(id: number) {
+    return await this.prismaService.lesson.update({
+      where: { id },
+      data: {
+        status: 1,
+        deletedAt: null,
       },
     });
   }

@@ -34,7 +34,8 @@ export class CommentPostService {
     });
     return { comments: commentPosts, total };
   }
-  async getAllCommentsInLessons(post_id: number) {
+
+  async getAllCommentsInPosts(post_id: number) {
     const commentPosts = await this.prismaService.commentPost.findMany({
       where: { post_id, reply: null },
       select: {
@@ -71,6 +72,7 @@ export class CommentPostService {
     });
   }
   async getAll(
+    post_id: number,
     filters: CommentPostFilterType,
   ): Promise<CommentPostPaginationResponseType> {
     const items_per_page = Number(filters.items_per_page) || 10;
@@ -81,6 +83,7 @@ export class CommentPostService {
       take: items_per_page,
       skip,
       where: {
+        post_id,
         OR: [
           {
             message: {
@@ -114,6 +117,7 @@ export class CommentPostService {
     });
     const total = await this.prismaService.commentPost.count({
       where: {
+        post_id,
         OR: [
           {
             message: {
@@ -135,6 +139,7 @@ export class CommentPostService {
       data: CommentPosts,
       total,
       nextPage,
+      lastPage,
       previousPage,
       currentPage: page,
       itemsPerPage: items_per_page,
@@ -147,9 +152,11 @@ export class CommentPostService {
     });
   }
   async delete(id: number) {
-    return await this.prismaService.commentPost.update({
-      where: { id },
-      data: { status: 0, deletedAt: new Date() },
+    return await this.prismaService.commentPost.delete({ where: { id } });
+  }
+  async multipleDelete(ids: number[]) {
+    return await this.prismaService.commentPost.deleteMany({
+      where: { id: { in: ids } },
     });
   }
 }

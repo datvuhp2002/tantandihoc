@@ -21,6 +21,16 @@ export class CourseReceivedService {
       where: { id },
     });
   }
+  async delete(id: number) {
+    return await this.prismaService.courseReceived.delete({
+      where: { id },
+    });
+  }
+  async multipleDelete(ids) {
+    return await this.prismaService.courseReceived.deleteMany({
+      where: { id: { in: ids } },
+    });
+  }
   async detail(id: number): Promise<CourseReceived> {
     return await this.prismaService.courseReceived.findUnique({
       where: { id },

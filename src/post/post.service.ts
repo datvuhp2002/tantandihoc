@@ -384,6 +384,112 @@ export class PostService {
       itemsPerPage: items_per_page,
     };
   }
+  async trash(filters: PostFilterType): Promise<PostPaginationResponseType> {
+    const isPublished = filters.isPublished;
+    const category = Number(filters.category_id);
+    let items_per_page = Number(filters.items_per_page) || 10;
+    const page = Number(filters.page) || 1;
+    const search = filters.search || '';
+
+    const skip = page > 1 ? (page - 1) * items_per_page : 0;
+    const whereClause: Prisma.PostWhereInput = {
+      OR: [
+        {
+          title: {
+            contains: search,
+          },
+        },
+        {
+          summary: {
+            contains: search,
+          },
+        },
+        {
+          content: {
+            contains: search,
+          },
+        },
+      ],
+      AND: [
+        {
+          status: 0,
+        },
+      ],
+    };
+
+    if (!Array.isArray(whereClause.AND)) {
+      whereClause.AND = [whereClause.AND];
+    }
+
+    if (isPublished) {
+      if (isPublished === 'true')
+        whereClause.AND.push({
+          isPublished: 1,
+        });
+      if (isPublished === 'false')
+        whereClause.AND.push({
+          isPublished: 0,
+        });
+    }
+
+    if (category) {
+      whereClause.AND.push({
+        categoryId: category,
+      });
+    }
+
+    if (filters.except) {
+      whereClause.AND.push({
+        id: { not: Number(filters.except) },
+      });
+    }
+
+    const total = await this.prismaService.post.count({
+      where: whereClause,
+    });
+    if (filters.items_per_page == 'all') {
+      items_per_page = total;
+    }
+
+    const posts = await this.prismaService.post.findMany({
+      take: items_per_page,
+      skip,
+      where: whereClause,
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            avatar: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const lastPage = Math.ceil(total / items_per_page);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const previousPage = page - 1 < 1 ? null : page - 1;
+
+    return {
+      data: posts,
+      total,
+      nextPage,
+      lastPage,
+      previousPage,
+      currentPage: page,
+      itemsPerPage: items_per_page,
+    };
+  }
 
   async findOne(id: number): Promise<Post> {
     const post = await this.prismaService.post.findUnique({
@@ -423,12 +529,47 @@ export class PostService {
   }
 
   async deleteOne(id: number): Promise<Post> {
-    return this.prismaService.post.delete({
+    return await this.prismaService.post.update({
+      where: { id },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
+    });
+  }
+  async forceDelete(id: number): Promise<Post> {
+    return await this.prismaService.post.delete({
       where: { id },
     });
   }
-
-  async deleteMany(ids: number[]) {
+  async restore(id: number): Promise<Post> {
+    return await this.prismaService.post.update({
+      where: { id },
+      data: {
+        status: 1,
+        deletedAt: null,
+      },
+    });
+  }
+  async multipleRestore(ids: number[]) {
+    return await this.prismaService.post.updateMany({
+      where: { id: { in: ids } },
+      data: {
+        status: 1,
+        deletedAt: null,
+      },
+    });
+  }
+  async multipleSoftDelete(ids) {
+    await this.prismaService.post.updateMany({
+      where: { id: { in: ids } },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
+    });
+  }
+  async multipleForceDelete(ids) {
     await this.prismaService.post.deleteMany({
       where: { id: { in: ids } },
     });

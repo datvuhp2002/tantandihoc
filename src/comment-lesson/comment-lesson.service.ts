@@ -67,6 +67,7 @@ export class CommentLessonService {
     return { comments: commentLessons, total };
   }
   async getAll(
+    lesson_id: number,
     filters: CommentLessonFilterType,
   ): Promise<CommentLessonPaginationResponseType> {
     const items_per_page = Number(filters.items_per_page) || 10;
@@ -77,6 +78,7 @@ export class CommentLessonService {
       take: items_per_page,
       skip,
       where: {
+        lesson_id,
         OR: [
           {
             message: {
@@ -98,6 +100,7 @@ export class CommentLessonService {
         },
         author: {
           select: {
+            username: true,
             email: true,
           },
         },
@@ -108,6 +111,7 @@ export class CommentLessonService {
     });
     const total = await this.prismaService.commentLesson.count({
       where: {
+        lesson_id,
         OR: [
           {
             message: {
@@ -144,9 +148,13 @@ export class CommentLessonService {
     });
   }
   async delete(id: number) {
-    return await this.prismaService.commentLesson.update({
+    return await this.prismaService.commentLesson.delete({
       where: { id },
-      data: { status: 0, deletedAt: new Date() },
+    });
+  }
+  async multipleDelete(ids) {
+    return await this.prismaService.commentLesson.deleteMany({
+      where: { id: { in: ids } },
     });
   }
 }

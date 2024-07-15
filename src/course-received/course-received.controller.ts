@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -20,6 +21,17 @@ import {
 @Controller('course-received')
 export class CourseReceivedController {
   constructor(private courseReceivedService: CourseReceivedService) {}
+  @Delete('multiple')
+  @Roles('Admin')
+  multipleDelete(@Body() ids) {
+    return this.courseReceivedService.multipleDelete(ids);
+  }
+  @Delete(':id')
+  @Roles('Admin')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.courseReceivedService.delete(id);
+  }
+
   @Put(':id')
   @Roles('Admin')
   update(

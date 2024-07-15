@@ -31,12 +31,13 @@ export class CommentPostController {
   ): Promise<any> {
     return this.commentPostService.getAllReplyComments(reply, post_id);
   }
+
   @Get('/get-all-comments-in-posts/:id')
   @Roles('Admin', 'User')
-  getAllCommentsInLessons(
+  getAllCommentsInPosts(
     @Param('id', ParseIntPipe) post_id: number,
   ): Promise<any> {
-    return this.commentPostService.getAllCommentsInLessons(post_id);
+    return this.commentPostService.getAllCommentsInPosts(post_id);
   }
   @Post()
   @Roles('Admin', 'User')
@@ -52,12 +53,13 @@ export class CommentPostController {
   getDetail(@Param('id', ParseIntPipe) id: number): Promise<CommentPost> {
     return this.commentPostService.getDetail(id);
   }
-  @Get()
-  @Roles('Admin', 'User')
+  @Get('/get-full-comments-in-post/:id')
+  @Roles('Admin')
   getAll(
+    @Param('id', ParseIntPipe) post_id: number,
     @Query() filters: CommentPostFilterType,
   ): Promise<CommentPostPaginationResponseType> {
-    return this.commentPostService.getAll(filters);
+    return this.commentPostService.getAll(post_id, filters);
   }
   @Put(':id')
   @Roles('Admin', 'User')
@@ -66,6 +68,11 @@ export class CommentPostController {
     @Body() data: UpdateCommentPostDto,
   ) {
     return this.commentPostService.update(id, data);
+  }
+  @Delete('multiple-delete')
+  @Roles('Admin')
+  multipleDelete(@Body() ids) {
+    return this.commentPostService.multipleDelete(ids);
   }
   @Delete(':id')
   @Roles('Admin', 'User')

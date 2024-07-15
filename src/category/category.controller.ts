@@ -21,10 +21,38 @@ import { Roles } from 'src/auth/decorator/roles.decorator';
 @Controller('categories')
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
+  @Delete('multiple-force-delete')
+  @Roles('Admin')
+  multipleForceDelete(@Body() ids) {
+    return this.categoryService.multipleForceDelete(ids);
+  }
+  @Delete(':id')
+  @Roles('Admin')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.categoryService.forceDelete(id);
+  }
+  @Put('multiple-restore')
+  @Roles('Admin')
+  multipleRestore(@Body() ids) {
+    return this.categoryService.multipleRestore(ids);
+  }
+  @Put('restore/:id')
+  @Roles('Admin')
+  restore(@Param('id', ParseIntPipe) id: number) {
+    return this.categoryService.restore(id);
+  }
+
   @Post()
   @Roles('Admin')
   create(@Body() data: CreateCategoryDto): Promise<Category> {
     return this.categoryService.create(data);
+  }
+  @Get('trash')
+  @Roles('Admin', 'User')
+  trash(
+    @Query() filters: CategoryFilterType,
+  ): Promise<CategoryPaginationResponseType> {
+    return this.categoryService.trash(filters);
   }
   @Get()
   @Roles('Admin', 'User')
@@ -45,10 +73,5 @@ export class CategoryController {
     @Body() data: UpdateCategoryDto,
   ) {
     return this.categoryService.update(id, data);
-  }
-  @Delete(':id')
-  @Roles('Admin')
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.categoryService.delete(id);
   }
 }

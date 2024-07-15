@@ -26,6 +26,18 @@ import { Roles } from 'src/auth/decorator/roles.decorator';
 @Controller('courses')
 export class CourseController {
   constructor(private courseService: CourseService) {}
+  @Delete('multiple-force-delete')
+  @Roles('Admin')
+  multipleForceDelete(@Body() ids: number[]) {
+    console.log(ids);
+    return this.courseService.multipleForceDelete(ids);
+  }
+  @Delete('multiple-soft-delete')
+  @Roles('Admin')
+  multipleSoftDelete(@Body() ids: number[]) {
+    return this.courseService.multipleSoftDelete(ids);
+  }
+
   @Post()
   @Roles('Admin')
   @UseInterceptors(
@@ -60,6 +72,21 @@ export class CourseController {
       ...data,
       thumbnail: 'course/' + file.filename,
     });
+  }
+  @Put('multiple-restore')
+  @Roles('Admin')
+  multipleRestore(@Body() ids: number[]) {
+    return this.courseService.multipleRestore(ids);
+  }
+  @Put('add-discount/:id')
+  @Roles('Admin')
+  addDiscount(@Body() ids: number[], @Param('id', ParseIntPipe) id: number) {
+    return this.courseService.addDiscount(ids, id);
+  }
+  @Put('restore/:id')
+  @Roles('Admin')
+  restore(@Param('id', ParseIntPipe) id: number) {
+    return this.courseService.restore(id);
   }
   @Put(':id')
   @Roles('Admin')
@@ -99,17 +126,31 @@ export class CourseController {
       thumbnail: 'course/' + file.filename,
     });
   }
+  @Get('trash')
+  @Roles('Admin')
+  trash(
+    @Query() params: CourseFilterType,
+  ): Promise<CoursePaginationResponseType> {
+    return this.courseService.trash(params);
+  }
   @Get(':id')
   @Roles('Admin', 'User')
   getDetail(@Param('id', ParseIntPipe) id: number) {
     return this.courseService.getDetail(id);
   }
+
   @Get()
   @Roles('Admin', 'User')
   getAll(
     @Query() params: CourseFilterType,
   ): Promise<CoursePaginationResponseType> {
     return this.courseService.getAll(params);
+  }
+
+  @Delete('/force-delete/:id')
+  @Roles('Admin')
+  forceDelete(@Param('id', ParseIntPipe) id: number) {
+    this.courseService.forceDelete(id);
   }
   @Delete(':id')
   @Roles('Admin')
