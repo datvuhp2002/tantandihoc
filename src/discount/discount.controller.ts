@@ -50,7 +50,7 @@ export class DiscountController {
     return this.discountService.detail(id);
   }
   @Get()
-  @Roles('Admin')
+  @Roles('Admin', 'User')
   getAll(
     @Query() filter: DiscountFilterType,
   ): Promise<DiscountPaginationResponseType> {

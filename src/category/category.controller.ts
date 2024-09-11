@@ -26,10 +26,16 @@ export class CategoryController {
   multipleForceDelete(@Body() ids) {
     return this.categoryService.multipleForceDelete(ids);
   }
-  @Delete(':id')
+  @Delete('multiple-soft-delete')
   @Roles('Admin')
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.categoryService.forceDelete(id);
+  multipleSoftDelete(@Body() ids) {
+    return this.categoryService.multipleSoftDelete(ids);
+  }
+
+  @Delete('soft-delete/:id')
+  @Roles('Admin')
+  softDelete(@Param('id', ParseIntPipe) id: number) {
+    return this.categoryService.softDelete(id);
   }
   @Put('multiple-restore')
   @Roles('Admin')

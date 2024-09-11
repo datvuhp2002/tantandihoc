@@ -44,11 +44,15 @@ export class DiscountService {
     const currentDate = new Date();
     const startDate = new Date(data.start_date);
     const endDate = new Date(data.end_date);
-    if (startDate < currentDate) {
+    if (data.value < 0)
+      throw new BadRequestException(
+        'Giá trị không hợp lệ, hãy nhập một số lớn hơn 0',
+      );
+    if (startDate.getTime() < currentDate.getTime()) {
       throw new BadRequestException('Ngày bắt đầu không hợp lệ');
     }
 
-    if (endDate < startDate) {
+    if (endDate.getTime() < startDate.getTime()) {
       throw new BadRequestException('Ngày kết thúc không hợp lệ');
     }
     if (startDate.getTime() === endDate.getTime()) {
@@ -56,7 +60,12 @@ export class DiscountService {
         'Thời gian bắt đầu và thời gian kết thúc không thể trùng nhau',
       );
     }
-
+    if (data.type === 'percentage') {
+      if (data.value > 100)
+        throw new BadRequestException(
+          'Giá trị không hợp lệ, giảm giá theo phần trăm không thể giảm hơn 100%',
+        );
+    }
     return await this.prismaService.discount.create({ data });
   }
 

@@ -192,20 +192,75 @@ export class CategoryService {
     });
   }
   async restore(id: number) {
-    return await this.prismaService.category.update({
+    await this.prismaService.category.update({
       where: { id },
       data: { status: 1, deletedAt: null },
+    });
+    await this.prismaService.course.updateMany({
+      where: {
+        categoryId: id,
+      },
+      data: {
+        status: 1,
+        deletedAt: null,
+      },
+    });
+    await this.prismaService.post.updateMany({
+      where: {
+        categoryId: id,
+      },
+      data: {
+        status: 1,
+        deletedAt: null,
+      },
     });
   }
   async multipleRestore(ids) {
-    return await this.prismaService.category.updateMany({
+    await this.prismaService.category.updateMany({
       where: { id: { in: ids } },
       data: { status: 1, deletedAt: null },
     });
+    await this.prismaService.course.updateMany({
+      where: { categoryId: { in: ids } },
+      data: {
+        status: 1,
+        deletedAt: null,
+      },
+    });
+    await this.prismaService.post.updateMany({
+      where: { categoryId: { in: ids } },
+      data: {
+        status: 1,
+        deletedAt: null,
+      },
+    });
   }
-  async forceDelete(id: number) {
-    await this.prismaService.category.delete({
+
+  async softDelete(id: number) {
+    const data = await this.prismaService.category.update({
       where: { id },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
+    });
+    await this.prismaService.course.updateMany({
+      where: {
+        categoryId: id,
+      },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
+    });
+    await this.prismaService.post.updateMany({
+      where: {
+        categoryId: id,
+      },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
     });
   }
   async multipleSoftDelete(ids) {
@@ -216,8 +271,31 @@ export class CategoryService {
         deletedAt: new Date(),
       },
     });
+    await this.prismaService.course.updateMany({
+      where: { categoryId: { in: ids } },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
+    });
+    await this.prismaService.post.updateMany({
+      where: { categoryId: { in: ids } },
+      data: {
+        status: 0,
+        deletedAt: new Date(),
+      },
+    });
   }
-  async multipleForceDelete(ids) {
+  async multipleForceDelete(ids: number[]) {
+    // Xóa tất cả các bản ghi liên quan trước
+    await this.prismaService.post.deleteMany({
+      where: { categoryId: { in: ids } },
+    });
+    await this.prismaService.course.deleteMany({
+      where: { categoryId: { in: ids } },
+    });
+
+    // Cuối cùng, xóa danh mục
     await this.prismaService.category.deleteMany({
       where: { id: { in: ids } },
     });
